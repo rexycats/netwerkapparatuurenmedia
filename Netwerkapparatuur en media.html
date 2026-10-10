@@ -1,0 +1,710 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Netwerkapparatuur en media</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Rubik:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: zelfde reeks als Netwerklab: kop, vier modi, zijnavigatie + werkkaart. Accent: signaallamp (amber) op kabelblauw/teal */
+:root{
+  --bg:#EDF1F3; --surface:#FFFFFF; --surface-2:#E4EAEE; --ink:#13233F; --ink-2:#4B5A6E; --line:#CDD6DC;
+  --teal:#0B7A7C; --teal-ink:#FFFFFF; --teal-soft:#D5ECEC;
+  --lamp:#F2A93B; --lamp-ink:#2E1C00; --lamp-soft:#FBEBCF;
+  --good:#256B43; --good-bg:#E1F1E7; --bad:#A83232; --bad-bg:#F7E3E1; --info-bg:#E6ECF4;
+  --term-bg:#13233F; --term-ink:#DCE6F2; --term-lab:#F2A93B;
+  --mono:'JetBrains Mono', ui-monospace, 'Courier New', monospace;
+  --sans:'Rubik', system-ui, -apple-system, 'Segoe UI', Arial, sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#0C1422; --surface:#141F33; --surface-2:#1B2940; --ink:#E6ECF4; --ink-2:#9DAEC3; --line:#283954;
+    --teal:#3CC0BD; --teal-ink:#05201F; --teal-soft:#123B3D;
+    --lamp:#F4B24A; --lamp-ink:#2A1800; --lamp-soft:#3A2A10;
+    --good:#6FD39A; --good-bg:#12301F; --bad:#F08A80; --bad-bg:#3A1B1B; --info-bg:#1B2940;
+    --term-bg:#070D18; --term-ink:#DCE6F2; --term-lab:#F4B24A;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#0C1422; --surface:#141F33; --surface-2:#1B2940; --ink:#E6ECF4; --ink-2:#9DAEC3; --line:#283954;
+  --teal:#3CC0BD; --teal-ink:#05201F; --teal-soft:#123B3D;
+  --lamp:#F4B24A; --lamp-ink:#2A1800; --lamp-soft:#3A2A10;
+  --good:#6FD39A; --good-bg:#12301F; --bad:#F08A80; --bad-bg:#3A1B1B; --info-bg:#1B2940;
+  --term-bg:#070D18; --term-ink:#DCE6F2; --term-lab:#F4B24A;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.5}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
+code,.mono{font-family:var(--mono);font-weight:700;font-size:.92em}
+h1,h2,h3{text-wrap:balance;line-height:1.2}
+.app{max-width:1180px;margin:0 auto;padding-inline:20px;padding-block:20px 56px;display:flex;flex-direction:column;gap:20px}
+.top{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px 20px}
+.brand{display:flex;align-items:center;gap:12px}
+.logo{font-family:var(--mono);font-weight:700;background:var(--ink);color:var(--lamp);width:44px;height:44px;border-radius:10px;display:grid;place-items:center;font-size:17px;flex:none}
+.name{margin:0;font-weight:700;font-size:20px;letter-spacing:-.01em}
+.tag{margin:0;color:var(--ink-2);font-size:14px}
+.stats{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.stat{display:inline-flex;align-items:baseline;gap:6px;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:6px 14px;font-variant-numeric:tabular-nums}
+.stat .k{font-size:13px;color:var(--ink-2)}
+.stat b{font-family:var(--mono);font-size:16px}
+.ghost{background:none;border:none;color:var(--ink-2);font-size:14px;text-decoration:underline;text-underline-offset:3px;padding:6px 4px}
+.seg{display:flex;gap:6px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:6px;overflow-x:auto}
+.seg button{flex:1;min-width:max-content;background:none;border:none;border-radius:10px;padding:10px 16px;font-weight:600;color:var(--ink-2);display:flex;align-items:center;justify-content:center;gap:8px}
+.seg button[aria-selected="true"]{background:var(--ink);color:var(--surface)}
+.seg .lock{font-family:var(--mono);font-size:12px;font-weight:700;background:var(--lamp-soft);color:var(--ink);border-radius:6px;padding:1px 6px}
+.seg button[aria-selected="true"] .lock{background:var(--lamp);color:var(--lamp-ink)}
+.layout{display:grid;grid-template-columns:260px minmax(0,1fr);gap:20px;align-items:start}
+.nav{display:flex;flex-direction:column;gap:16px;position:sticky;top:calc(env(safe-area-inset-top,0px) + 16px);max-height:calc(100vh - 32px);overflow:auto;padding-bottom:8px}
+.nav-group{display:flex;flex-direction:column;gap:2px}
+.nav-label{margin:0 0 4px 12px;font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2)}
+.nav-item{display:flex;justify-content:space-between;align-items:center;gap:8px;text-align:left;background:none;border:1px solid transparent;border-radius:10px;padding:8px 12px;font-size:15px}
+.nav-item:hover{background:var(--surface)}
+.nav-item[aria-current="true"]{background:var(--teal-soft);border-color:var(--teal);font-weight:600}
+.badge{font-family:var(--mono);font-size:12px;color:var(--ink-2);font-variant-numeric:tabular-nums;white-space:nowrap}
+.badge.ok{color:var(--good)}
+.req{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--lamp);margin-right:6px;vertical-align:middle}
+.main{display:flex;flex-direction:column;gap:20px;min-width:0}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:24px;min-width:0}
+.eyebrow{margin:0;font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--teal)}
+.card h2{margin:4px 0 0;font-size:26px}
+.card h3{margin:0;font-size:19px}
+.lead{color:var(--ink-2);margin:6px 0 0;max-width:68ch}
+.sec{display:flex;flex-direction:column;gap:12px;padding-top:20px;margin-top:20px;border-top:1px solid var(--line)}
+.sec p{margin:0;max-width:72ch}
+.note{background:var(--lamp-soft);border-radius:10px;padding:10px 14px;font-weight:600}
+.kv{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin:0}
+.kv-i{background:var(--surface-2);border-radius:10px;padding:12px 14px;min-width:0}
+.kv dt{font-weight:600;color:var(--teal)}
+.kv dd{margin:4px 0 0;font-size:15px}
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:10px}
+table{border-collapse:collapse;width:100%;font-size:15px;font-variant-numeric:tabular-nums}
+th{background:var(--ink);color:var(--surface);text-align:left;font-weight:600;padding:8px 12px;white-space:nowrap}
+td{padding:7px 12px;border-top:1px solid var(--line);vertical-align:top}
+tbody tr:nth-child(even) td{background:var(--surface-2)}
+.terms{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+pre.term{margin:0;background:var(--term-bg);color:var(--term-ink);font-family:var(--mono);font-size:13.5px;line-height:1.6;border-radius:10px;padding:14px 16px;overflow-x:auto;white-space:pre}
+pre.term .tl{display:block;color:var(--term-lab);font-weight:700;margin-bottom:4px;font-family:var(--sans)}
+.quiz{display:flex;flex-direction:column;gap:16px}
+.qz{display:flex;flex-direction:column;gap:8px}
+.qq{margin:0;font-weight:600}
+.choices{display:grid;gap:8px}
+.choice{text-align:left;background:var(--surface);border:1.5px solid var(--line);border-radius:10px;padding:10px 14px;display:flex;gap:12px;align-items:baseline}
+.choice:hover:not(:disabled){border-color:var(--teal)}
+.choice .l{font-family:var(--mono);font-weight:700;color:var(--teal)}
+.choice.sel{border-color:var(--teal);background:var(--teal-soft)}
+.choice.right{border-color:var(--good);background:var(--good-bg)}
+.choice.wrong{border-color:var(--bad);background:var(--bad-bg)}
+.choice:disabled{cursor:default}
+.fb{border-radius:10px;padding:12px 16px;display:flex;flex-direction:column;gap:4px}
+.fb.good{background:var(--good-bg);color:var(--ink)}
+.fb.bad{background:var(--bad-bg);color:var(--ink)}
+.fb.info{background:var(--info-bg)}
+.fb b.t{color:var(--good)}
+.fb.bad b.t{color:var(--bad)}
+.fb p{margin:0}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.btn{background:var(--teal);color:var(--teal-ink);border:none;border-radius:10px;padding:10px 18px;font-weight:600}
+.btn.sec2{background:var(--surface-2);color:var(--ink)}
+.btn.lamp{background:var(--lamp);color:var(--lamp-ink)}
+.btn:disabled{opacity:.5;cursor:default}
+.inp{border:1.5px solid var(--line);background:var(--surface);border-radius:10px;padding:10px 12px;min-width:0;width:100%;max-width:340px}
+.inp.mono{font-family:var(--mono)}
+.inp:focus{border-color:var(--teal);outline:none}
+.prompt{font-size:18px;margin:0;max-width:72ch}
+.qhead{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:13px;border-radius:999px;padding:3px 10px;background:var(--surface-2);color:var(--ink-2);font-weight:500}
+.pill.req{width:auto;height:auto;background:var(--lamp-soft);color:var(--ink);margin:0}
+.qbody{display:flex;flex-direction:column;gap:16px;margin-top:16px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{background:var(--surface-2);border:1px solid var(--line);border-radius:999px;padding:4px 12px;font-size:14px}
+.chip.ok{background:var(--good-bg);border-color:var(--good)}
+.progress{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px}
+.pi{display:flex;justify-content:space-between;gap:8px;background:var(--surface-2);border-radius:8px;padding:8px 12px;font-size:14px}
+.pi b{font-family:var(--mono)}
+.pi.ok{background:var(--good-bg)}
+.bar{height:8px;background:var(--surface-2);border-radius:99px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--teal)}
+.form{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px 16px}
+.field{display:flex;flex-direction:column;gap:4px;min-width:0}
+.field label{font-size:14px;font-weight:600}
+.field .help{font-size:13px;color:var(--ink-2)}
+.field .inp{max-width:none}
+.chk{font-size:14px;margin:0;display:flex;gap:8px;align-items:baseline}
+.chk.ok::before{content:"✓";color:var(--good);font-weight:700}
+.chk.warn::before{content:"!";color:var(--bad);font-weight:700;font-family:var(--mono)}
+.chk.tip::before{content:"i";color:var(--teal);font-weight:700;font-family:var(--mono)}
+.op{display:flex;flex-direction:column;gap:12px;padding-top:20px;margin-top:20px;border-top:1px solid var(--line)}
+.op-head{display:flex;gap:12px;align-items:center}
+.op-n{font-family:var(--mono);font-weight:700;background:var(--ink);color:var(--lamp);border-radius:8px;width:32px;height:32px;display:grid;place-items:center;flex:none}
+.big{font-family:var(--mono);font-size:44px;font-weight:700;line-height:1}
+.result{display:flex;flex-wrap:wrap;gap:20px;align-items:center}
+.rev{display:flex;flex-direction:column;gap:10px}
+.rv{border:1px solid var(--line);border-radius:10px;padding:10px 14px;display:flex;flex-direction:column;gap:4px}
+.rv.ok{border-color:var(--good)}
+.rv.no{border-color:var(--bad)}
+.rv p{margin:0}
+.small{font-size:14px;color:var(--ink-2)}
+.copybox{width:100%;min-height:140px;font-family:var(--mono);font-size:13px;border:1px solid var(--line);border-radius:10px;padding:10px;background:var(--surface-2);resize:vertical}
+.gloss{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:8px 20px;margin:0}
+.gloss div{padding:8px 0;border-bottom:1px solid var(--line)}
+.gloss dt{font-weight:600}
+.gloss dd{margin:2px 0 0;font-size:15px;color:var(--ink-2)}
+.testbar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+@media (max-width:820px){
+  .layout{grid-template-columns:minmax(0,1fr)}
+  .nav{position:static;max-height:none;flex-direction:row;overflow-x:auto;gap:12px}
+  .nav-group{flex:none;min-width:220px}
+}
+@media (max-width:480px){
+  .app{padding-inline:16px}
+  .seg{display:grid;grid-template-columns:1fr 1fr}
+  .card{padding:18px}
+  .big{font-size:36px}
+}
+@media (prefers-reduced-motion:no-preference){
+  .fb{animation:pop .18s ease-out}
+  @keyframes pop{from{transform:translateY(4px);opacity:.4}to{transform:none;opacity:1}}
+}
+</style>
+
+<div class="app">
+  <header class="top">
+    <div class="brand">
+      <div class="logo" aria-hidden="true">NM</div>
+      <div>
+        <p class="name">Netwerkapparatuur en media</p>
+        <p class="tag">Netwerkkaart, switch, router, firewall, kabels en wifi</p>
+      </div>
+    </div>
+    <div class="stats" aria-live="polite">
+      <span class="stat"><span class="k">Juist</span><b id="st-ok">0</b></span>
+      <span class="stat"><span class="k">Reeks</span><b id="st-streak">0</b></span>
+      <button type="button" class="ghost" id="reset">Wis mijn voortgang</button>
+    </div>
+  </header>
+  <p class="fb info" id="reset-confirm" hidden></p>
+
+  <nav class="seg" role="tablist" aria-label="Onderdelen">
+    <button type="button" role="tab" id="m-theory" aria-selected="true">Theorie</button>
+    <button type="button" role="tab" id="m-practice" aria-selected="false">Oefenen</button>
+    <button type="button" role="tab" id="m-lab" aria-selected="false">Praktijk</button>
+    <button type="button" role="tab" id="m-test" aria-selected="false">Eindtoets <span class="lock" id="lockbadge"></span></button>
+  </nav>
+
+  <div id="v-theory" class="layout">
+    <aside class="nav" id="toc" aria-label="Hoofdstukken"></aside>
+    <main class="main"><article class="card" id="chapter"></article></main>
+  </div>
+
+  <div id="v-practice" class="layout" hidden>
+    <aside class="nav" id="mods" aria-label="Oefeningen"></aside>
+    <main class="main">
+      <section class="card" id="qcard" aria-live="polite"></section>
+      <section class="card" id="plan"></section>
+    </main>
+  </div>
+
+  <div id="v-lab" hidden><section class="card" id="lab"></section></div>
+  <div id="v-test" hidden><section class="card" id="test" aria-live="polite"></section></div>
+</div>
+
+<script>
+const CH=[{"n": 0, "les": 3, "t": "Opfrissing IPv4", "s": [{"t": "IPv4 herhaald", "h": "<p>Eerst een korte herhaling van IPv4. Bij /24 zijn de eerste 3 getallen het netwerkdeel: 192.168.1. Het adres begint met 192.168, dus het is privé. De standaardgateway is het adres van de router. In dit werkblad zie je hoe die router er in het echt uitziet, en welke andere kastjes er nog in een netwerk zitten.</p><div class=\"terms\"><pre class=\"term\">IPv4-adres. . . . : 192.168.1.23\nSubnetmasker . . : 255.255.255.0\nStandaardgateway : 192.168.1.1</pre></div><dl class=\"kv\"><div class=\"kv-i\"><dt>Netwerkdeel</dt><dd>192.168.1: de straat</dd></div><div class=\"kv-i\"><dt>Soort adres</dt><dd>privé: begint met 192.168</dd></div><div class=\"kv-i\"><dt>Gateway</dt><dd>192.168.1.1: het adres van de router</dd></div></dl>"}], "quiz": []}, {"n": 1, "les": 3, "t": "Netwerkkaart en MAC-adres", "s": [{"t": "NIC: de netwerkkaart", "h": "<p>Elk toestel in een netwerk heeft een netwerkkaart nodig: de NIC, Network Interface Card. Dat is de deur van je pc naar het netwerk. Er bestaan vaste netwerkkaarten met een poort voor een kabel, en draadloze met antennes voor wifi. In een laptop of gsm zit ze ingebouwd. Servers hebben vaak meerdere netwerkkaarten. Met teaming laat je die samenwerken als één kaart: dat geeft meer snelheid, en als één kaart of kabel uitvalt, werkt de andere gewoon verder.</p><dl class=\"kv\"><div class=\"kv-i\"><dt>Vast</dt><dd>Een poort voor de netwerkkabel (RJ45). Vroeger een insteekkaart, nu meestal ingebouwd op het moederbord.</dd></div><div class=\"kv-i\"><dt>Draadloos</dt><dd>Een wifi-kaart met antennes, ingebouwd in elke laptop en gsm, of als USB-stick.</dd></div><div class=\"kv-i\"><dt>Teaming</dt><dd>Twee of meer netwerkkaarten werken samen als één: sneller én reserve als er één uitvalt.</dd></div></dl><p class=\"note\">NIC = Network Interface Card</p>"}, {"t": "Het MAC-adres", "h": "<p>Hoe herkent een netwerk elke netwerkkaart? Met het MAC-adres. Dat is 48 bits lang en wordt geschreven als 6 paren hexa, zoals 00-A0-CC-23-AF-4A. De eerste 3 paren zijn de OUI: een nummer dat de IEEE aan elke fabrikant geeft. Intel, Asus, Apple hebben elk hun eigen OUI. De laatste 3 paren kiest de fabrikant zelf, voor elke kaart een ander. Zo wordt elk MAC-adres uniek. Je kan de fabrikant opzoeken door de eerste 3 paren in te geven in een MAC-lookup-website.</p><div class=\"tw\"><table><thead><tr><th>00-A0-CC</th><th>23-AF-4A</th></tr></thead><tbody><tr><td>OUI: de fabrikant, uitgedeeld door de IEEE</td><td>serienummer, gekozen door de fabrikant</td></tr></tbody></table></div><p><b>48 bits</b> = 6 paren hexa. De eerste helft zegt wie de kaart maakte, de tweede helft is uniek per kaart. Zo bestaat elk MAC-adres maar één keer.</p>"}, {"t": "Wie gebruikt het MAC-adres?", "h": "<p>Het MAC-adres wordt in het lokale netwerk gebruikt. Een switch onthoudt welk MAC-adres op welke poort zit. Een DHCP-server kan met het MAC-adres een vaste IP-reservatie maken: dat toestel krijgt dan altijd hetzelfde adres. Een router of access point kan een MAC-filter gebruiken: alleen gekende toestellen mogen erop. Buiten je eigen netwerk, op het internet, wordt het MAC-adres niet gebruikt: daar telt het IP-adres. Opgelet: gsm's en laptops gebruiken vaak een willekeurig MAC-adres per wifi-netwerk. Dat is goed voor je privacy, maar dan werkt een reservatie of filter niet.</p><dl class=\"kv\"><div class=\"kv-i\"><dt>Switch</dt><dd>onthoudt op welke poort elk MAC-adres zit, en stuurt data alleen daarheen</dd></div><div class=\"kv-i\"><dt>DHCP-server</dt><dd>kan een MAC-adres altijd hetzelfde IP-adres geven: een reservatie</dd></div><div class=\"kv-i\"><dt>Router of AP</dt><dd>kan alleen gekende MAC-adressen toelaten: een MAC-filter</dd></div></dl><p><b>Let op:</b> een gsm gebruikt vaak een <b>willekeurig MAC-adres</b> per wifi-netwerk, om privacyredenen. Een reservatie of filter werkt dan niet meer.</p>"}, {"t": "MAC-adres vinden", "h": "<p>In Windows vind je het MAC-adres op verschillende manieren. In de opdrachtprompt met ipconfig /all: kijk naar de regel Fysiek adres. Of met getmac /v: dat toont alle netwerkkaarten. Of via Instellingen, Netwerk en internet, je adapter, Hardware-eigenschappen. Op een gsm staat het bij Instellingen, Info of Over de telefoon, Wifi-adres. Een printer drukt een configuratiepagina af. En op routers en netwerkkaarten staat het vaak op een sticker.</p><dl class=\"kv\"><div class=\"kv-i\"><dt>ipconfig /all</dt><dd>regel <b>Fysiek adres</b> bij je adapter</dd></div><div class=\"kv-i\"><dt>getmac /v</dt><dd>alle netwerkkaarten met hun MAC-adres</dd></div><div class=\"kv-i\"><dt>Instellingen</dt><dd>Netwerk en internet › Wifi of Ethernet › Hardware-eigenschappen</dd></div><div class=\"kv-i\"><dt>Andere toestellen</dt><dd>gsm: Instellingen › Info › Wifi-adres. Printer: configuratiepagina. Op het kastje: sticker.</dd></div></dl>"}], "quiz": [{"q": "Je zoekt de fabrikant van een netwerkkaart. Welk deel van het MAC-adres gebruik je?", "o": ["De eerste 3 paren (OUI)", "De laatste 3 paren", "Het hele IP-adres"], "a": 0, "w": "De eerste 3 paren zijn de OUI: die geeft de IEEE aan elke fabrikant. Zoek ze op met een MAC-lookup."}]}, {"n": 2, "les": 3, "t": "Hub, switch en bridge", "s": [{"t": "Hub of switch?", "h": "<p>Een hub en een switch verbinden allebei toestellen met kabels. Maar een hub is dom: alles wat binnenkomt, stuurt hij naar alle poorten. Dat is zoals een omroep in de school: iedereen hoort het. Een switch is slim: hij onthoudt in een MAC-tabel welk MAC-adres op welke poort zit, en stuurt data alleen naar de juiste poort. Zoals een brief in het juiste postvak. Daarom werkt een hub op laag 1 (alleen signalen) en een switch op laag 2 (MAC-adressen). Hubs worden vandaag bijna niet meer verkocht.</p><dl class=\"kv\"><div class=\"kv-i\"><dt>Hub · laag 1</dt><dd>Stuurt alles wat binnenkomt naar <b>alle</b> poorten. Iedereen krijgt alles, ook wat niet voor hem bedoeld is. Traag en verouderd.</dd></div><div class=\"kv-i\"><dt>Switch · laag 2</dt><dd>Leert welk <b>MAC-adres</b> op welke poort zit (MAC-tabel) en stuurt data <b>alleen</b> naar de juiste poort. Sneller en veiliger.</dd></div></dl><p class=\"note\">Hub = omroep in de school · switch = een brief in het juiste postvak</p>"}, {"t": "De bridge", "h": "<p>Een bridge, of brug, verbindt twee stukken netwerk, segmenten, tot één netwerk. De bridge kijkt naar het MAC-adres: wat voor de andere kant bedoeld is, laat hij door, de rest houdt hij tegen. Zo werkt hij op laag 2, net als een switch. Eigenlijk is een switch een bridge met heel veel poorten. Je kent bridges ook in het dagelijks leven: een powerline-adapter verbindt je netwerk via het stopcontact, en een draadloze bridge verbindt twee gebouwen.</p><p><b>Segment A</b> (pc's van lokaal A)  →  <b>Bridge</b> (laat alleen door wat naar de overkant moet)  →  <b>Segment B</b> (pc's van lokaal B)</p><p>Een bridge verbindt twee netwerksegmenten tot één netwerk, en kijkt net als een switch naar het <b>MAC-adres</b> (laag 2). Een switch is eigenlijk een bridge met veel poorten. Voorbeelden: een draadloze bridge tussen twee gebouwen, een powerline-adapter.</p>"}, {"t": "Soorten switches", "h": "<p>Er zijn twee soorten switches. Een unmanaged switch steek je in en hij werkt: je kan niets instellen. Dat is wat de meeste mensen thuis hebben. Een managed switch kan je instellen via een webpagina. Dan kan je bijvoorbeeld VLAN's maken (aparte netwerken voor leerlingen en leerkrachten), voorrang geven aan bepaald verkeer (QoS), poorten uitschakelen en zien hoeveel verkeer er is. Bedrijven en scholen gebruiken managed switches, omdat ze het netwerk willen beheren en beveiligen. Daarnaast heb je laag 2- en laag 3-switches. Een laag 2-switch werkt alleen met MAC-adressen. Een laag 3-switch kan ook routeren: verkeer tussen verschillende netwerken doorsturen op basis van IP-adressen. Routeren betekent: de weg zoeken naar een ander netwerk.</p><div class=\"tw\"><table><thead><tr><th></th><th>Unmanaged</th><th>Managed</th></tr></thead><tbody><tr><td>Instellen</td><td>kan niet: plug and play</td><td>via een webpagina of commando's</td></tr><tr><td>Extra's</td><td>geen</td><td>VLAN's, QoS, monitoring, poorten uitzetten, PoE-beheer</td></tr><tr><td>Prijs</td><td>goedkoop</td><td>duurder</td></tr><tr><td>Waar?</td><td>thuis</td><td>bedrijven en scholen</td></tr></tbody></table></div><p><b>Laag 2-switch:</b> schakelt op MAC-adres. <b>Laag 3-switch:</b> kan daarnaast ook <b>routeren</b>: verkeer tussen verschillende netwerken (op IP-adres) doorsturen.</p>"}, {"t": "Switch kopen", "h": "<p>Stel: je hebt thuis te weinig poorten op je router en je koopt een switch. Waar let je op? Hoeveel poorten heb je nodig, en hoe snel moeten ze zijn: 1 gigabit is de standaard. Moet de switch toestellen van stroom voorzien via de kabel? Dat heet PoE, Power over Ethernet, handig voor camera's en access points. Wil je hem kunnen instellen? Dan neem je een managed switch. Moet hij ook routeren? Dan een laag 3-switch. En past hij op je bureau of in een serverkast (rack)?</p><dl class=\"kv\"><div class=\"kv-i\"><dt>Aantal poorten</dt><dd>5, 8, 16, 24 of 48</dd></div><div class=\"kv-i\"><dt>Snelheid</dt><dd>1 Gbit/s, 2,5 of 10 Gbit/s</dd></div><div class=\"kv-i\"><dt>PoE</dt><dd>stroom via de kabel voor camera's en access points</dd></div><div class=\"kv-i\"><dt>Managed?</dt><dd>thuis niet nodig, in een bedrijf wel</dd></div><div class=\"kv-i\"><dt>Laag 2 of 3</dt><dd>moet hij ook routeren?</dd></div><div class=\"kv-i\"><dt>Behuizing</dt><dd>klein bureaumodel of 19 inch voor een rack</dd></div></dl>"}], "quiz": [{"q": "Een bedrijf wil aparte netwerken voor personeel en gasten op dezelfde switch. Wat kopen ze?", "o": ["Een hub", "Een unmanaged switch", "Een managed switch"], "a": 2, "w": "Met een managed switch kan je VLAN's maken: aparte netwerken op dezelfde hardware."}]}, {"n": 3, "les": 3, "t": "Router, modem en gateway", "s": [{"t": "Modem of router?", "h": "<p>Een modem en een router worden vaak verward. De modem brengt het internet naar je huis: hij zet het signaal van de lijn van je provider om naar gewone netwerkdata. Die lijn kan een telefoonlijn zijn (DSL), een coaxkabel (zoals bij Telenet) of glasvezel. De modem heeft het publieke IP-adres en zit aan de kant van het WAN, het grote netwerk. De router brengt het internet naar je toestellen: hij maakt je thuisnetwerk, het LAN, deelt privé-IP-adressen uit met DHCP en vertaalt ze met NAT. Modem is de voordeur van de straat naar je huis, de router is de gang die naar elke kamer leidt.</p><div class=\"tw\"><table><thead><tr><th>Modem</th><th>Router</th></tr></thead><tbody><tr><td>brengt het internet <b>naar je huis</b></td><td>brengt het internet <b>naar je toestellen</b></td></tr><tr><td>zet het signaal van de lijn om (telefoonlijn, coax, glasvezel)</td><td>verbindt netwerken en zoekt de weg (laag 3)</td></tr><tr><td>heeft het <b>publieke</b> IP-adres</td><td>deelt <b>privé</b>-IP-adressen uit (DHCP) en doet NAT</td></tr><tr><td>werkt aan de kant van het WAN</td><td>maakt je LAN</td></tr></tbody></table></div><p><b>Internet</b> (provider)  →  <b>Modem</b> (signaal omzetten)  →  <b>Router</b> (LAN, DHCP, NAT)  →  <b>Toestellen</b> (pc, gsm, tv)</p>"}, {"t": "Alles-in-één", "h": "<p>Thuis heb je meestal één kastje van je provider, zoals de Bbox van Proximus of de modem van Telenet. Dat is een alles-in-één-toestel: een modem, een router, een switch met een paar poorten achteraan, een access point voor wifi en een firewall in één doos. Bedrijven gebruiken liever aparte toestellen: de modem van de provider, een eigen firewall, managed switches en meerdere access points. Dat is krachtiger, veiliger en makkelijker uit te breiden.</p><dl class=\"kv\"><div class=\"kv-i\"><dt>Modem</dt><dd>zet het signaal van de lijn om</dd></div><div class=\"kv-i\"><dt>Router</dt><dd>NAT en DHCP: maakt je thuisnetwerk</dd></div><div class=\"kv-i\"><dt>Switch</dt><dd>4 LAN-poorten achteraan</dd></div><div class=\"kv-i\"><dt>Access point</dt><dd>maakt het wifi-netwerk</dd></div><div class=\"kv-i\"><dt>Firewall</dt><dd>blokkeert ongevraagd verkeer van buiten</dd></div><div class=\"kv-i\"><dt>Bedrijven</dt><dd>aparte toestellen: modem, firewall, switches, AP's</dd></div></dl>"}, {"t": "NAT of bridge-modus", "h": "<p>Je kent NAT al: de router vertaalt privéadressen naar één publiek adres. Een modem van je provider kan in twee standen staan. In router-modus doet het kastje alles zelf: NAT, DHCP en wifi. Zo staat het bij bijna iedereen. In bridge-modus doet het kastje alleen nog het werk van een modem en geeft het publieke adres door aan een eigen router of firewall erachter. Waarom zou je dat doen? Omdat je een betere eigen router of firewall wil gebruiken, en omdat je geen dubbele NAT wil: twee routers achter elkaar die allebei vertalen, dat geeft problemen met bijvoorbeeld gamen en VPN.</p><dl class=\"kv\"><div class=\"kv-i\"><dt>Router-modus (NAT)</dt><dd>Het kastje van de provider doet alles: NAT, DHCP, wifi. Zo staat het bij bijna iedereen thuis.</dd></div><div class=\"kv-i\"><dt>Bridge-modus</dt><dd>Het kastje werkt <b>alleen als modem</b> en geeft het publieke adres door aan je <b>eigen router</b> of firewall. Die doet dan NAT.</dd></div></dl><p>Waarom bridge? Je wil een betere eigen router of firewall gebruiken, en geen <b>dubbele NAT</b> (twee routers achter elkaar die allebei vertalen).</p>"}, {"t": "Gateway, pc en server", "h": "<p>Een gateway is een toestel dat twee verschillende netwerken met elkaar verbindt, bijvoorbeeld je thuisnetwerk en het internet. De default gateway die je in ipconfig ziet, is het adres van de router: de deur naar buiten. Je doelstellingen vragen ook het verschil tussen een pc en een server. Een pc is voor één gebruiker. Een server biedt diensten aan vele anderen: bestanden delen, e-mail, een website. Daarom draait een server dag en nacht, en heeft hij reserve-onderdelen zoals een dubbele voeding en meerdere schijven in RAID, zodat hij blijft werken als er iets stukgaat.</p><dl class=\"kv\"><div class=\"kv-i\"><dt>Gateway</dt><dd>Een toestel dat twee <b>verschillende</b> netwerken verbindt. De <b>default gateway</b> in ipconfig is het adres van de router: de deur naar buiten.</dd></div><div class=\"kv-i\"><dt>Pc</dt><dd>Voor één gebruiker. Gewone onderdelen, staat uit als je klaar bent.</dd></div><div class=\"kv-i\"><dt>Server</dt><dd>Biedt <b>diensten</b> aan vele anderen: bestanden, mail, websites. Draait 24/7, met reserve-onderdelen: dubbele voeding, RAID.</dd></div></dl>"}, {"t": "Andere kastjes", "h": "<p>Er zijn nog andere kastjes. Een access point maakt een wifi-netwerk en verbindt draadloze toestellen met het bekabelde netwerk. Een repeater vangt het wifi-signaal op en zendt het opnieuw uit: zo bereik je verder, maar de snelheid zakt vaak. Een powerline-adapter gebruikt de elektriciteitskabels in je huis als netwerkkabel: je steekt een adapter in het stopcontact bij de router en een tweede in een andere kamer. Een PoE-injector stopt stroom in de netwerkkabel, zodat een access point of camera aan het plafond geen stopcontact nodig heeft. Deze toestellen zie je terug bij de oefening 'benoem'.</p><dl class=\"kv\"><div class=\"kv-i\"><dt>Access point</dt><dd>maakt wifi en verbindt draadloze toestellen met het bekabelde netwerk</dd></div><div class=\"kv-i\"><dt>Repeater</dt><dd>vangt het wifi-signaal op en zendt het opnieuw uit: groter bereik, vaak lagere snelheid</dd></div><div class=\"kv-i\"><dt>Powerline</dt><dd>netwerk via het stopcontact: een adapter bij de router, een andere in een andere kamer</dd></div><div class=\"kv-i\"><dt>PoE-injector</dt><dd>stopt stroom in de netwerkkabel, voor een access point of camera zonder stopcontact</dd></div></dl>"}], "quiz": [{"q": "Welk toestel deelt thuis de privé-IP-adressen uit?", "o": ["De modem", "De router (DHCP)", "De switch"], "a": 1, "w": "De router is meestal de DHCP-server. De modem brengt het internet binnen, de switch kijkt alleen naar MAC-adressen."}]}, {"n": 4, "les": 3, "t": "Firewall en poorten", "s": [{"t": "Firewall", "h": "<p>Een firewall is de portier van je netwerk. Hij bekijkt elk pakketje en beslist met regels of het binnen of buiten mag, op basis van het IP-adres, de poort en het protocol. Er zijn regels voor binnenkomend verkeer, inbound, en voor uitgaand verkeer, outbound. Een hardware-firewall is een apart toestel dat het hele netwerk beschermt. Bekende merken zijn Fortinet met de FortiGate, Palo Alto, Cisco, Sophos, Check Point en WatchGuard. Een software-firewall is een programma op één pc, zoals de Windows Defender Firewall.</p><dl class=\"kv\"><div class=\"kv-i\"><dt>Wat doet hij?</dt><dd>Bekijkt elk pakketje en beslist met <b>regels</b>: doorlaten of blokkeren, op basis van IP-adres, poort en protocol.</dd></div><div class=\"kv-i\"><dt>Inbound</dt><dd>regels voor verkeer dat <b>binnenkomt</b></dd></div><div class=\"kv-i\"><dt>Outbound</dt><dd>regels voor verkeer dat <b>buitengaat</b></dd></div></dl><dl class=\"kv\"><div class=\"kv-i\"><dt>Hardware-firewall</dt><dd>apart toestel dat het <b>hele netwerk</b> beschermt. Merken: Fortinet, Palo Alto, Cisco, Sophos, Check Point, WatchGuard.</dd></div><div class=\"kv-i\"><dt>Software-firewall</dt><dd>programma op <b>één pc</b>: Windows Defender Firewall, of als deel van een antivirus.</dd></div></dl>"}, {"t": "Functies van een firewall", "h": "<p>Een bedrijfsfirewall doet veel meer dan blokkeren. Met VPN kunnen medewerkers van thuis veilig inloggen. Een webfilter blokkeert bepaalde websites. Antivirus en IPS, een inbraakpreventiesysteem, houden aanvallen tegen. Een gastnetwerk geeft bezoekers internet zonder toegang tot je eigen toestellen. Een DMZ, een demilitarized zone, is een aparte zone voor servers die bereikbaar moeten zijn vanaf het internet, zoals een webserver of mailserver. Raakt een hacker in de DMZ, dan zit hij nog niet in het interne netwerk. Thuis zijn een gastnetwerk, ouderlijk toezicht en port forwarding het handigst.</p><dl class=\"kv\"><div class=\"kv-i\"><dt>VPN</dt><dd>veilig van thuis inloggen op het bedrijfsnetwerk</dd></div><div class=\"kv-i\"><dt>Webfilter</dt><dd>bepaalde websites blokkeren</dd></div><div class=\"kv-i\"><dt>Antivirus en IPS</dt><dd>aanvallen en virussen tegenhouden</dd></div><div class=\"kv-i\"><dt>Gastnetwerk</dt><dd>bezoekers krijgen internet, maar geen toegang tot je eigen toestellen</dd></div><div class=\"kv-i\"><dt>DMZ</dt><dd>aparte zone voor servers die bereikbaar moeten zijn vanaf internet</dd></div><div class=\"kv-i\"><dt>Thuis handig</dt><dd>gastnetwerk, ouderlijk toezicht, port forwarding</dd></div></dl>"}, {"t": "Poorten", "h": "<p>Op één computer draaien veel diensten tegelijk. Het IP-adres is het gebouw, de poort is de deur naar een bepaalde dienst. Surfen gaat via poort 80 (HTTP) en veilig surfen via 443 (HTTPS). Mail versturen via 25 (SMTP), mail ophalen via 110 (POP3) of 143 (IMAP). DNS gebruikt poort 53, FTP 20 en 21, SSH 22, Telnet 23 en extern bureaublad 3389. Een firewall bepaalt welke deuren open staan.</p><div class=\"tw\"><table><thead><tr><th>Poort</th><th>Protocol</th><th>Waarvoor?</th><th>Poort</th><th>Protocol</th><th>Waarvoor?</th></tr></thead><tbody><tr><td><code>20/21</code></td><td>FTP</td><td>bestanden</td><td><code>80</code></td><td>HTTP</td><td>surfen</td></tr><tr><td><code>22</code></td><td>SSH</td><td>veilig op afstand</td><td><code>110</code></td><td>POP3</td><td>mail ophalen</td></tr><tr><td><code>23</code></td><td>Telnet</td><td>onveilig op afstand</td><td><code>143</code></td><td>IMAP</td><td>mail lezen</td></tr><tr><td><code>25</code></td><td>SMTP</td><td>mail versturen</td><td><code>443</code></td><td>HTTPS</td><td>veilig surfen</td></tr><tr><td><code>53</code></td><td>DNS</td><td>namen opzoeken</td><td><code>3389</code></td><td>RDP</td><td>extern bureaublad</td></tr></tbody></table></div><p>IP-adres = het gebouw · poort = het nummer van de deur. Een firewall bepaalt welke deuren open staan.</p>"}, {"t": "Netwerkprofielen in Windows", "h": "<p>De Windows Defender Firewall kent drie profielen. Domein is voor een bedrijfsnetwerk. Privé is voor een netwerk dat je vertrouwt, zoals thuis: je pc is zichtbaar en je kan bestanden en printers delen. Openbaar is voor een station of café: je pc is verborgen voor anderen. Wisselen doe je via Instellingen, Netwerk en internet, Wifi of Ethernet, je netwerk, Netwerkprofieltype. De firewall-instellingen vind je in Windows-beveiliging, Firewall en netwerkbeveiliging, of in het Configuratiescherm. De inkomende en uitgaande regels zie je bij Geavanceerde instellingen, of typ wf.msc.</p><dl class=\"kv\"><div class=\"kv-i\"><dt>Domein</dt><dd>op het bedrijfsnetwerk, beheerd door de IT-dienst</dd></div><div class=\"kv-i\"><dt>Privé</dt><dd>thuis, een netwerk dat je vertrouwt: je pc is <b>zichtbaar</b>, bestanden en printers delen kan</dd></div><div class=\"kv-i\"><dt>Openbaar</dt><dd>station, café, hotel: je pc is <b>verborgen</b> voor anderen. Veiligste keuze.</dd></div></dl><p><b>Wisselen:</b> Instellingen › Netwerk en internet › Wifi of Ethernet › je netwerk › Netwerkprofieltype. <b>Firewall:</b> Windows-beveiliging › Firewall en netwerkbeveiliging. <b>Regels:</b> Geavanceerde instellingen (<code>wf.msc</code>) › Inkomende en uitgaande regels.</p>"}, {"t": "Pc 2 ziet het netwerk niet", "h": "<p>Op pc 1 zie je in de Verkenner alle toestellen in het netwerk, op pc 2 niet. Hoe komt dat? Pc 2 staat waarschijnlijk op het profiel Openbaar, of netwerkdetectie staat uit. Dan is de pc verborgen en ziet hij ook de anderen niet. Oplossing: zet het profiel op Privé en schakel netwerkdetectie en bestandsdeling in. Nog een vraag: wat gebeurt er met de Windows-firewall als je een andere firewall installeert, bijvoorbeeld als deel van een antivirus? Die neemt het werk over en schakelt de Windows-firewall uit, want twee firewalls tegelijk zitten elkaar in de weg.</p><dl class=\"kv\"><div class=\"kv-i\"><dt>Probleem</dt><dd>Op pc 1 zie je in de Verkenner alle toestellen van het netwerk. Op pc 2 zie je niets.</dd></div><div class=\"kv-i\"><dt>Oorzaak</dt><dd>Pc 2 staat op het profiel <b>Openbaar</b>, of <b>netwerkdetectie</b> staat uit.</dd></div><div class=\"kv-i\"><dt>Oplossing</dt><dd>Zet het profiel op <b>Privé</b> en schakel netwerkdetectie en bestandsdeling in.</dd></div></dl><p><b>Extra firewall geïnstalleerd?</b> Een firewall van ZoneAlarm, Kaspersky of FortiClient neemt het werk over: de Windows-firewall wordt dan uitgeschakeld. Twee firewalls tegelijk geeft problemen.</p>"}], "quiz": [{"q": "Een bedrijf wil zijn webserver bereikbaar maken vanaf het internet, maar het interne netwerk beschermen. Waar zet je de server?", "o": ["In de DMZ", "Op het gastnetwerk", "Achter de modem in bridge"], "a": 0, "w": "De DMZ is een aparte zone voor servers die van buitenaf bereikbaar moeten zijn, gescheiden van het interne netwerk."}]}, {"n": 5, "les": 3, "t": "Apparaten opsporen", "s": [{"t": "IP-scanners", "h": "<p>Met een IP-scanner zie je welke toestellen er in een netwerk zitten. Gratis programma's zijn Advanced IP Scanner en Angry IP Scanner, en op je gsm de app Fing. Bedrijven gebruiken uitgebreidere tools zoals Lansweeper, PRTG of Microsoft SCCM: die houden een volledige inventaris bij en waarschuwen als er iets stukgaat. Een scanner toont per toestel het IP-adres, de naam, het MAC-adres en vaak de fabrikant. Belangrijk: scan alleen je eigen netwerk, of met toestemming van de beheerder. Op een vreemd netwerk scannen is niet toegelaten.</p><dl class=\"kv\"><div class=\"kv-i\"><dt>IP-scanners</dt><dd>Advanced IP Scanner, Angry IP Scanner, Fing (app op je gsm)</dd></div><div class=\"kv-i\"><dt>Uitgebreider</dt><dd>Lansweeper, PRTG, Microsoft SCCM: inventaris en monitoring voor bedrijven</dd></div><div class=\"kv-i\"><dt>Wat zie je?</dt><dd>IP-adres, naam, MAC-adres en fabrikant van elk toestel</dd></div></dl><p class=\"note\">Scan alleen je eigen netwerk, of met toestemming van de beheerder</p>"}, {"t": "Een scan lezen", "h": "<p>Zo ziet het resultaat van een scan eruit. Wat kan je afleiden? Het toestel op .1 met een naam van de provider is de router. Dat is ook de default gateway, en daar zit de firewall in. Aan de fabrikant en de naam herken je de andere toestellen: een pc, een printer, een gsm, een camera. Zo kan je ook vreemde toestellen opsporen die er niet horen. Dit voorbeeld is verzonnen, maar zo ziet het er bij jou thuis ook ongeveer uit.</p><div class=\"tw\"><table><thead><tr><th>IP-adres</th><th>Naam</th><th>Fabrikant</th><th>Wat is het?</th></tr></thead><tbody><tr><td><code>192.168.1.1</code></td><td>bbox.lan</td><td>Sagemcom</td><td>router, gateway en firewall</td></tr><tr><td><code>192.168.1.20</code></td><td>DESKTOP-KAAT</td><td>ASUSTek</td><td>een pc</td></tr><tr><td><code>192.168.1.35</code></td><td>HP-LaserJet</td><td>HP</td><td>netwerkprinter</td></tr><tr><td><code>192.168.1.52</code></td><td>Galaxy-S24</td><td>Samsung</td><td>gsm</td></tr><tr><td><code>192.168.1.60</code></td><td>—</td><td>Hikvision</td><td>IP-camera</td></tr></tbody></table></div><p>Het adres op <b>.1</b> met een naam van de provider is bijna altijd de router: daar zit ook de firewall.</p>"}, {"t": "Netwerkcommando's", "h": "<p>Dit zijn de belangrijkste netwerkcommando's. ipconfig /all toont je eigen instellingen. arp -a toont de IP- en MAC-adressen van toestellen waarmee je pc onlangs sprak: zo zie je ook andere toestellen. ping 8.8.8.8 test of je de DNS-server van Google kan bereiken. tracert www.microsoft.com toont de weg naar die website. nslookup www.ubuntu.com geeft het IP-adres van de website van Ubuntu. Met nslookup -type=mx en een domeinnaam zoek je de mailserver op, bijvoorbeeld van de gemeente Sint-Niklaas. Met telnet en een poortnummer test je of een poort open staat, en netstat -an toont welke poorten op je eigen pc open staan.</p><div class=\"tw\"><table><thead><tr><th>Commando</th><th>Wat doet het?</th></tr></thead><tbody><tr><td><code>ipconfig /all</code></td><td>je eigen instellingen, met MAC-adres</td></tr><tr><td><code>arp -a</code></td><td>IP- en MAC-adressen van toestellen waarmee je pc sprak</td></tr><tr><td><code>ping 8.8.8.8</code></td><td>kan ik de DNS-server van Google bereiken?</td></tr><tr><td><code>tracert www.microsoft.com</code></td><td>welke weg volgt het verkeer?</td></tr><tr><td><code>nslookup www.ubuntu.com</code></td><td>welk IP-adres hoort bij deze naam?</td></tr><tr><td><code>nslookup -type=mx sint-niklaas.be</code></td><td>welke mailserver hoort bij dit domein?</td></tr><tr><td><code>telnet mail.server.be 25</code></td><td>staat poort 25 open?</td></tr><tr><td><code>netstat -an</code></td><td>welke poorten staan open op mijn pc?</td></tr></tbody></table></div>"}, {"t": "Extern IP en whois", "h": "<p>Het externe IP-adres van de school vind je door in je browser 'wat is mijn IP' te zoeken. Iedereen in de klas krijgt hetzelfde adres: dat van de schoolrouter, door NAT. Wil je weten wie eigenaar is van een IP-adres? Dan doe je een whois-opzoeking, bijvoorbeeld via een website als ipinfo.io. Die toont welk bedrijf het adres beheert, bijvoorbeeld Google, Amazon of Proximus, en waar het ongeveer staat. Met nslookup en een IP-adres zoek je omgekeerd de naam op, als die bestaat.</p><dl class=\"kv\"><div class=\"kv-i\"><dt>Extern IP-adres</dt><dd>Zoek in je browser \"wat is mijn IP\". Op school krijgt iedereen hetzelfde: het publieke adres van de schoolrouter.</dd></div><div class=\"kv-i\"><dt>Eigenaar van een IP</dt><dd>Een <b>whois</b>-opzoeking (bv. via ipinfo.io) toont welk bedrijf het adres beheert en waar het staat.</dd></div><div class=\"kv-i\"><dt>Domein van een IP</dt><dd><code>nslookup</code> met een IP-adres zoekt omgekeerd de naam op, als die bestaat.</dd></div></dl>"}], "quiz": [{"q": "Je wil het MAC-adres zien van de printer waar je net naar printte. Welk commando?", "o": ["arp -a", "tracert", "netstat -an"], "a": 0, "w": "arp -a toont de IP- en MAC-adressen van toestellen waarmee je pc onlangs communiceerde."}]}, {"n": 6, "les": 4, "t": "Twisted pair", "s": [{"t": "Twisted pair", "h": "<p>De gewone netwerkkabel heet twisted pair: binnenin zitten 8 draadjes in 4 paren, en elk paar is om elkaar heen gedraaid. Dat draaien zorgt ervoor dat storing van buitenaf elkaar opheft. Er zijn drie soorten. UTP, unshielded, heeft geen afscherming: goedkoop en soepel, de kabel die je thuis gebruikt. STP, shielded, heeft rond elk paar een afscherming: voor plaatsen met veel elektrische storing, zoals een fabriek met grote machines. FTP, foiled, heeft één folie rond alle paren samen: bijvoorbeeld in liftschachten. De stekker heet RJ45, en een kabel mag maximaal 100 meter lang zijn.</p><dl class=\"kv\"><div class=\"kv-i\"><dt>UTP</dt><dd><b>Unshielded</b>: geen afscherming. Goedkoop en soepel. De gewone netwerkkabel thuis en op kantoor.</dd></div><div class=\"kv-i\"><dt>STP</dt><dd><b>Shielded</b>: elk paar heeft een eigen afscherming. Voor plaatsen met veel storing: fabrieken, grote machines.</dd></div><div class=\"kv-i\"><dt>FTP</dt><dd><b>Foiled</b>: een folie rond alle paren samen. Bv. in liftschachten en fabriekshallen.</dd></div></dl><p>Waarom getwist? Elk paar draait om elkaar heen, zodat storing van buitenaf en van de andere paren elkaar <b>opheft</b>. Stekker: <b>RJ45</b>. Maximaal <b>100 meter</b> per kabel.</p>"}, {"t": "Categorieën", "h": "<p>Netwerkkabels bestaan in categorieën. Hoe hoger de categorie, hoe hogere frequentie de kabel aankan en hoe sneller hij is. Cat 5 haalt 100 megabit en is verouderd. Cat 5e haalt 1 gigabit: dat is het minimum vandaag. Cat 6 haalt 1 gigabit, en 10 gigabit over korte afstand, tot 55 meter. Cat 6A haalt 10 gigabit over de volle 100 meter: dat is een goede keuze voor bedrijven. Cat 7 is altijd afgeschermd, en Cat 8 haalt 40 gigabit maar alleen tot 30 meter, voor datacenters.</p><div class=\"tw\"><table><thead><tr><th>Categorie</th><th>Snelheid</th><th>Frequentie</th><th>Opmerking</th></tr></thead><tbody><tr><td><code>Cat 5</code></td><td>100 Mbit/s</td><td>100 MHz</td><td>verouderd</td></tr><tr><td><code>Cat 5e</code></td><td>1 Gbit/s</td><td>100 MHz</td><td>minimum vandaag</td></tr><tr><td><code>Cat 6</code></td><td>1 Gbit/s, 10 Gbit/s tot 55 m</td><td>250 MHz</td><td>goede keuze thuis</td></tr><tr><td><code>Cat 6A</code></td><td>10 Gbit/s tot 100 m</td><td>500 MHz</td><td>bedrijven, toekomstgericht</td></tr><tr><td><code>Cat 7 / 7A</code></td><td>10 Gbit/s</td><td>600 / 1000 MHz</td><td>altijd afgeschermd</td></tr><tr><td><code>Cat 8</code></td><td>40 Gbit/s tot 30 m</td><td>1600–2000 MHz</td><td>datacenters</td></tr></tbody></table></div>"}, {"t": "Straight of cross", "h": "<p>Een netwerkkabel kan straight of cross zijn. Bij een straight kabel zitten de draadjes aan beide kanten in dezelfde volgorde. Die gebruik je tussen verschillende toestellen, zoals een pc en een switch. Bij een cross kabel zijn de draadjes om te zenden en te ontvangen omgewisseld. Die had je vroeger nodig tussen twee gelijke toestellen, zoals twee pc's of twee switches: anders zou de ene zenden in het oor van de andere die ook zendt. Vandaag hebben bijna alle toestellen auto-MDIX: ze draaien het zelf om. Daarom gebruik je in de praktijk bijna altijd een straight kabel.</p><dl class=\"kv\"><div class=\"kv-i\"><dt>Straight (recht)</dt><dd>Beide stekkers zijn hetzelfde. Voor <b>verschillende</b> toestellen: pc ↔ switch, router ↔ switch.</dd></div><div class=\"kv-i\"><dt>Cross (gekruist)</dt><dd>Zenden en ontvangen (draad 1-2 en 3-6) zijn omgewisseld. Voor <b>gelijke</b> toestellen: pc ↔ pc, switch ↔ switch.</dd></div><div class=\"kv-i\"><dt>Vandaag: auto-MDIX</dt><dd>Moderne netwerkkaarten en switches draaien het zelf om. Je gebruikt dus bijna altijd een straight kabel.</dd></div></dl>"}, {"t": "PoE", "h": "<p>Kijk eens naar het plafond van het klaslokaal: daar hangt waarschijnlijk een access point voor de wifi. Daar zit geen stopcontact. Hoe krijgt het stroom? Via de netwerkkabel. Dat heet Power over Ethernet, PoE. Een PoE-switch of een PoE-injector stopt stroom in de UTP-kabel, en het toestel aan de andere kant haalt er stroom en data uit. Zo werkt het ook bij IP-camera's en vaste telefoons op kantoor.</p><p><b>PoE-switch</b> (of PoE-injector)  →  <b>UTP-kabel</b> (data + stroom)  →  <b>Access point</b> (aan het plafond)  →  <b>IP-camera</b> (buiten aan de gevel)</p><p>Met <b>Power over Ethernet</b> heeft een access point of camera geen stopcontact nodig. Op school hangen de wifi-toestellen aan het plafond: één netwerkkabel per toestel volstaat.</p>"}], "quiz": [{"q": "Waarom zijn de draadjes in een netwerkkabel per paar getwist?", "o": ["Om de kabel soepeler te maken", "Zodat storing elkaar opheft", "Om stroom te kunnen sturen"], "a": 1, "w": "Door het twisten heffen storingen van buitenaf en tussen de paren elkaar op."}]}, {"n": 7, "les": 4, "t": "Coax en glasvezel", "s": [{"t": "Coax", "h": "<p>Een coaxkabel heeft in het midden een koperen kern, daarrond isolatie, daarrond een gevlochten mantel die als afscherming dient, en tot slot een beschermlaag. Omdat kern en mantel dezelfde as hebben, heffen de elektrische en magnetische velden elkaar op: er lekt bijna geen storing naar binnen of naar buiten. Daarom gebruik je coax voor hoogfrequente signalen, zoals het tv-signaal en het internet van Telenet. Vroeger werden ook computernetwerken met coax gemaakt: op oude netwerkkaarten zie je nog een ronde BNC-aansluiting.</p><p><b>Kern</b> (koperen geleider)  →  <b>Isolatie</b> (kunststof)  →  <b>Mantel</b> (gevlochten afscherming)  →  <b>Buitenmantel</b> (beschermlaag)</p><dl class=\"kv\"><div class=\"kv-i\"><dt>Waarom goed?</dt><dd>Kern en mantel hebben dezelfde as: de velden heffen elkaar op. Bijna geen storing naar binnen of buiten.</dd></div><div class=\"kv-i\"><dt>Waar?</dt><dd>Tv-signaal, internet van Telenet (via de coax in je huis), vroeger ook computernetwerken.</dd></div></dl>"}, {"t": "Glasvezel", "h": "<p>Glasvezel stuurt data als lichtflitsjes door een draad van glas. Er zijn twee grote types. Singlemode heeft een heel dunne kern van 9 micrometer en gebruikt een laser: het licht gaat rechtdoor, kilometers ver. Dat gebruiken providers en bedrijven tussen gebouwen. Multimode heeft een dikkere kern van 50 of 62,5 micrometer: het licht kaatst heen en weer, en dat werkt tot een paar honderd meter. Multimode heeft types van OM1 tot OM5. Er is ook plastic vezel, voor korte afstanden. Glasvezel is heel snel, gaat ver, heeft geen last van elektrische storing en geleidt geen stroom: ideaal tussen twee gebouwen. Het nadeel: duurder en breekbaarder. Stekkers heten LC, SC en ST.</p><dl class=\"kv\"><div class=\"kv-i\"><dt>Singlemode (OS1/OS2)</dt><dd>Heel dunne kern (9 µm), een laser. <b>Kilometers</b> ver: tot 40 km en meer. Voor providers en tussen gebouwen.</dd></div><div class=\"kv-i\"><dt>Multimode (OM1–OM5)</dt><dd>Dikkere kern (50 of 62,5 µm), goedkopere lichtbron. <b>Honderden meters</b>. Binnen een gebouw of campus.</dd></div><div class=\"kv-i\"><dt>Plastic (POF)</dt><dd>Plastic in plaats van glas, enkele meters. Bv. audio of in auto's.</dd></div></dl><p>Voordelen: heel snel, grote afstanden, <b>geen elektrische storing</b> en geen stroomgeleiding tussen gebouwen. Nadelen: duurder en breekbaarder. Stekkers: LC, SC, ST.</p>"}, {"t": "Glasvezeltabel", "h": "<p>Deze tabel komt uit de cursus. Hoe hoger het OM-nummer, hoe beter de multimode-vezel. Bij multimode geldt: hoe sneller, hoe korter. OM3 haalt 10 gigabit tot 300 meter, OM4 tot 400 meter. Singlemode haalt tientallen kilometers. Gebruik de tabel om een kabel te kiezen: je kijkt naar de afstand en de snelheid die je nodig hebt.</p><div class=\"tw\"><table><thead><tr><th>Type</th><th>Kern</th><th>1 Gbit/s</th><th>10 Gbit/s</th><th>40 / 100 Gbit/s</th></tr></thead><tbody><tr><td><code>OM1</code></td><td>62,5 µm</td><td>275 m</td><td>33 m</td><td>—</td></tr><tr><td><code>OM2</code></td><td>50 µm</td><td>550 m</td><td>82 m</td><td>—</td></tr><tr><td><code>OM3</code></td><td>50 µm</td><td>800 m</td><td>300 m</td><td>100 m</td></tr><tr><td><code>OM4</code></td><td>50 µm</td><td>1100 m</td><td>400 m</td><td>150 m</td></tr><tr><td><code>OM5</code></td><td>50 µm</td><td>1100 m</td><td>400 m</td><td>150 m</td></tr><tr><td><code>OS1/OS2</code></td><td>9 µm</td><td>100 km</td><td>40 km</td><td>40 km</td></tr></tbody></table></div><p>Bron: de tabel uit de cursus. Hoe sneller, hoe korter de afstand bij multimode.</p>"}, {"t": "Welke kabel kies je?", "h": "<p>Zo kies je een kabel. Stel jezelf drie vragen: hoe ver, hoe snel, en is er storing? Thuis 40 meter naar de zolder: UTP Cat 6. Langs stroomkabels: afgeschermd, STP of FTP. Tussen twee bedrijfsgebouwen op 150 meter met 10 gigabit: dat is meer dan 100 meter, dus koper kan niet. Multimode glasvezel OM3 of OM4 haalt dat, en glasvezel geleidt geen stroom tussen twee gebouwen, wat bij koper gevaarlijk kan zijn. Gebouwen kilometers uit elkaar: singlemode.</p><div class=\"tw\"><table><thead><tr><th>Situatie</th><th>Keuze</th><th>Waarom?</th></tr></thead><tbody><tr><td>Thuis, 40 m naar de zolder</td><td>UTP Cat 6</td><td>onder 100 m, geen storing, toekomstgericht</td></tr><tr><td>Langs stroomkabels in een goot</td><td>STP of FTP</td><td>afscherming tegen storing</td></tr><tr><td>2 bedrijfsgebouwen, 150 m, 10 Gbit/s</td><td>multimode OM3/OM4</td><td>meer dan 100 m, en geen stroom tussen gebouwen</td></tr><tr><td>Gebouwen 5 km uit elkaar</td><td>singlemode</td><td>alleen singlemode haalt kilometers</td></tr><tr><td>Tv en Telenet-internet</td><td>coax</td><td>het signaal komt zo binnen</td></tr></tbody></table></div>"}], "quiz": [{"q": "Twee bedrijfsgebouwen liggen 150 m uit elkaar. Ze willen 10 Gbit/s. Welke kabel?", "o": ["UTP Cat 6A", "Multimode glasvezel OM3", "Coax"], "a": 1, "w": "Koper mag maximaal 100 m. OM3 haalt 10 Gbit/s tot 300 m, en glasvezel geleidt geen stroom tussen de gebouwen."}]}, {"n": 8, "les": 4, "t": "Wifi-standaarden", "s": [{"t": "Wifi-standaarden", "h": "<p>Wifi heet officieel 802.11, en elke nieuwe versie kreeg een letter: b, a, g, n, ac, ax en be. Omdat dat verwarrend is, kregen ze sinds 802.11n ook een gewone naam: n is Wi-Fi 4, ac is Wi-Fi 5, ax is Wi-Fi 6 en be is Wi-Fi 7. Elke versie is sneller. De snelheden in de tabel zijn theoretische maxima met alle antennes samen; in de praktijk haal je veel minder. Wi-Fi 6E gebruikt naast 2,4 en 5 GHz ook de nieuwe 6 GHz-band.</p><div class=\"tw\"><table><thead><tr><th>802.11</th><th>Nieuwe naam</th><th>Jaar</th><th>Frequentie</th><th>Max. snelheid</th></tr></thead><tbody><tr><td><code>b</code></td><td>—</td><td>1999</td><td>2,4 GHz</td><td>11 Mbit/s</td></tr><tr><td><code>a</code></td><td>—</td><td>1999</td><td>5 GHz</td><td>54 Mbit/s</td></tr><tr><td><code>g</code></td><td>—</td><td>2003</td><td>2,4 GHz</td><td>54 Mbit/s</td></tr><tr><td><code>n</code></td><td>Wi-Fi 4</td><td>2009</td><td>2,4 en 5 GHz</td><td>600 Mbit/s</td></tr><tr><td><code>ac</code></td><td>Wi-Fi 5</td><td>2014</td><td>5 GHz</td><td>tot 6,9 Gbit/s</td></tr><tr><td><code>ax</code></td><td>Wi-Fi 6 / 6E</td><td>2019</td><td>2,4 en 5 GHz (6E: ook 6)</td><td>tot 9,6 Gbit/s</td></tr><tr><td><code>be</code></td><td>Wi-Fi 7</td><td>2024</td><td>2,4, 5 en 6 GHz</td><td>tot 46 Gbit/s</td></tr></tbody></table></div><p>Theoretische maxima, met alle antennes samen. In de praktijk haal je veel minder.</p>"}, {"t": "2,4 of 5 GHz", "h": "<p>De meeste routers zenden op twee banden. 2,4 GHz heeft een groot bereik en gaat beter door muren, maar is trager en druk bezet: bluetooth en zelfs de microgolfoven gebruiken die frequentie. 5 GHz is veel sneller en heeft meer kanalen, maar het bereik is kleiner. Vergelijk het met geluid: lage tonen van een bas hoor je door de muur, hoge tonen niet. Ver weg in de tuin werkt 2,4 GHz dus beter, dicht bij de router kies je 5 GHz.</p><dl class=\"kv\"><div class=\"kv-i\"><dt>2,4 GHz</dt><dd>Groot bereik, gaat beter door muren. Maar trager en druk: ook bluetooth en de microgolfoven gebruiken het.</dd></div><div class=\"kv-i\"><dt>5 GHz</dt><dd>Veel sneller en meer kanalen. Maar kleiner bereik: muren houden het signaal sneller tegen.</dd></div></dl><p class=\"note\">Ver weg in de tuin? 2,4 GHz. Dicht bij de router en snel? 5 GHz.</p>"}, {"t": "MIMO", "h": "<p>MIMO staat voor multiple input, multiple output. De router en je toestel hebben meerdere antennes en sturen tegelijk meerdere datastromen. 2x2 betekent 2 antennes om te zenden en 2 om te ontvangen; 3x3 en 4x4 zijn sneller. Bij gewone MIMO, SU-MIMO, bedient de router de toestellen na elkaar, heel snel om de beurt. Zijn er veel gsm's en laptops tegelijk, dan moeten ze wachten. MU-MIMO, multi user, bedient meerdere toestellen tegelijk. Vergelijk het met een kassa: SU-MIMO is één kassa met een snelle kassierster, MU-MIMO opent meerdere kassa's tegelijk.</p><dl class=\"kv\"><div class=\"kv-i\"><dt>MIMO</dt><dd><b>M</b>ultiple <b>I</b>nput, <b>M</b>ultiple <b>O</b>utput: meerdere antennes zenden en ontvangen tegelijk meerdere datastromen. 2x2 = 2 zend- en 2 ontvangantennes.</dd></div><div class=\"kv-i\"><dt>SU-MIMO</dt><dd>Single User: de router bedient de toestellen <b>na elkaar</b>, heel snel om de beurt.</dd></div><div class=\"kv-i\"><dt>MU-MIMO</dt><dd>Multi User: de router bedient <b>meerdere toestellen tegelijk</b>. Minder wachten als het druk is.</dd></div></dl>"}, {"t": "Mesh-wifi", "h": "<p>In een groot huis haalt één router niet elke kamer. Een oplossing is mesh-wifi. Je zet meerdere toestellen, nodes, in huis. Eén ervan is de master en hangt aan de router. De andere verbinden draadloos met de master en met elkaar, en stellen zichzelf automatisch in. Samen vormen ze één wifi-netwerk met één naam, en je gsm wisselt ongemerkt naar de dichtste node. Volgens de cursus ligt de technische grens rond zes access points. Mesh is beter dan een gewone repeater, want een repeater herhaalt het signaal gewoon en halveert vaak de snelheid.</p><p><b>Master</b> (aan de router of modem)  →  <b>Node 2</b> (draadloos verbonden)  →  <b>Node 3</b> (draadloos verbonden)</p><p>Meerdere access points (nodes) stellen <b>zichzelf</b> in en vormen samen één wifi-netwerk met één naam. Je gsm wisselt ongemerkt naar de dichtste node. Grens: ongeveer <b>6 access points</b>. Beter dan een repeater, die het signaal gewoon herhaalt en vaak de snelheid halveert.</p>"}], "quiz": [{"q": "In een kantoor gebruiken 30 mensen tegelijk wifi. Welke techniek zorgt dat ze minder moeten wachten?", "o": ["MU-MIMO", "Een cross kabel", "Coax"], "a": 0, "w": "MU-MIMO laat de router meerdere toestellen tegelijk bedienen in plaats van na elkaar."}]}, {"n": 9, "les": 4, "t": "Wifi: beveiliging en kanalen", "s": [{"t": "Wifi-beveiliging", "h": "<p>Wifi moet versleuteld zijn, anders kan iedereen in de buurt meekijken. WEP was de eerste beveiliging, uit 1997, en is in enkele minuten te kraken: nooit meer gebruiken. WPA was een tijdelijke oplossing, WPA2 was jarenlang de standaard, en WPA3 is vandaag de veiligste. Extra tips: schakel WPS uit, dat is de knop of pincode om snel te verbinden, want die is een zwakke plek. Op school en in bedrijven gebruikt men certificaten, Enterprise: elke gebruiker logt in met eigen gegevens. Het SSID verbergen (de netwerknaam niet uitzenden) en een MAC-filter helpen een beetje, maar zijn makkelijk te omzeilen: een MAC-adres kan je nabootsen.</p><p><b>WEP</b> (1997 · in minuten te kraken)  →  <b>WPA</b> (tijdelijke oplossing)  →  <b>WPA2</b> (jarenlang de standaard)  →  <b>WPA3</b> (vandaag de veiligste)</p><dl class=\"kv\"><div class=\"kv-i\"><dt>Schakel WPS uit</dt><dd>de knop of pincode is een zwakke plek</dd></div><div class=\"kv-i\"><dt>Certificaten</dt><dd>Enterprise: elke gebruiker logt in met eigen gegevens, zoals op school</dd></div><div class=\"kv-i\"><dt>Extra, maar zwak</dt><dd>SSID verbergen en MAC-filter: makkelijk te omzeilen</dd></div></dl>"}, {"t": "Wifi-kanalen", "h": "<p>Elke wifi-band is opgedeeld in kanalen, zoals radiozenders. In de 2,4 GHz-band zijn er 13 kanalen, maar ze overlappen elkaar. Er zijn maar 3 kanalen die elkaar niet storen: 1, 6 en 11. Zenden al je buren op kanaal 1, dan kies je beter 6 of 11. In de 5 GHz-band zijn er veel meer kanalen, en die kan je bundelen tot 40, 80 of 160 MHz breed: hoe breder, hoe sneller. Meestal kiest je router zelf het beste kanaal.</p><dl class=\"kv\"><div class=\"kv-i\"><dt>2,4 GHz</dt><dd>13 kanalen, maar ze overlappen. Slechts <b>3 kanalen</b> storen elkaar niet: <b>1, 6 en 11</b>.</dd></div><div class=\"kv-i\"><dt>5 GHz</dt><dd>Veel meer kanalen: 36 tot 64 en 100 tot 140. Je kan ze bundelen tot 40, 80 of 160 MHz breed: breder is sneller.</dd></div></dl><p>Zenden al je buren op kanaal 1? Kies dan 6 of 11. Zo vermijd je storing. Meestal kiest de router automatisch.</p>"}, {"t": "Wifi detecteren", "h": "<p>Met netsh wlan show interfaces zie je de wifi waarmee je nu verbonden bent: de naam (SSID), de standaard (radiotype), de beveiliging, het kanaal en de signaalsterkte. Kanaal 44 is een 5 GHz-kanaal. Met netsh wlan show networks mode=bssid zie je alle netwerken in de buurt met hun kanaal. Op een gsm kan je een app zoals WiFi Analyzer gebruiken. Dit voorbeeld is verzonnen: in de praktijk doe je het zelf in het klaslokaal.</p><div class=\"terms\"><pre class=\"term\">C:\\&gt; netsh wlan show interfaces\nSSID . . . . . . : School-WiFi\nRadiotype  . . . : 802.11ax\nVerificatie  . . : WPA2-Enterprise\nKanaal . . . . . : 44\nSignaal  . . . . : 86%</pre></div><p><code>netsh wlan show networks mode=bssid</code> toont <b>alle</b> netwerken in de buurt met hun kanaal. Of gebruik een app zoals WiFi Analyzer.</p>"}], "quiz": [{"q": "Je wil je thuiswifi zo veilig mogelijk maken. Wat kies je?", "o": ["WEP met een lang wachtwoord", "WPA3 en WPS uit", "Alleen het SSID verbergen"], "a": 1, "w": "WEP is te kraken, het SSID verbergen is makkelijk te omzeilen. WPA3 met WPS uitgeschakeld is het veiligst."}]}, {"n": 10, "les": 4, "t": "Straalverbinding en satelliet", "s": [{"t": "Straalverbinding en satelliet", "h": "<p>Soms kan je geen kabel leggen. Een straalverbinding is een vaste verbinding tussen twee punten met radiogolven. Je hangt twee schotels die elkaar moeten kunnen zien, en dat werkt tot kilometers ver. Zo verbind je twee gebouwen zonder kabel, of brengt een provider internet naar het platteland. Satellietinternet gaat via een schotel naar een satelliet in de ruimte. Dat gebruik je op afgelegen plaatsen: op een boot, een festival, in de bergen of bij noodhulp. Nadelen: vertraging, want het signaal moet heel ver reizen, het is duur en er is vaak een datalimiet. Nieuwere satellieten in een lage baan, zoals Starlink, hebben minder vertraging.</p><dl class=\"kv\"><div class=\"kv-i\"><dt>Straalverbinding</dt><dd>Een vaste verbinding tussen <b>2 punten</b> met radiogolven (of infrarood). Twee schotels die elkaar <b>zien</b>, tot kilometers ver. Voor twee gebouwen zonder kabel, of internet op het platteland.</dd></div><div class=\"kv-i\"><dt>Satelliet</dt><dd>Internet via een schotel naar een satelliet. Voor <b>afgelegen plaatsen</b>: boten, festivals, bergen, noodhulp. Nadelen: vertraging, duur, vaak een datalimiet.</dd></div></dl>"}], "quiz": [{"q": "Een bedrijf heeft een magazijn 2 km verderop, aan de overkant van een snelweg. Graven kan niet. Wat kies je?", "o": ["Een straalverbinding", "Een UTP-kabel", "Een repeater"], "a": 0, "w": "Een straalverbinding verbindt twee vaste punten met zichtlijn over kilometers, zonder kabel."}]}];
+</script>
+<script>
+// ---------- helpers ----------
+const $=s=>document.querySelector(s);
+const rand=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const norm=s=>String(s||'').toLowerCase().replace(/\s+/g,' ').replace(/[.]+$/,'').trim();
+const hx2=n=>n.toString(16).toUpperCase().padStart(2,'0');
+const L='ABCDEF';
+// build a multiple-choice question: correct answer + distractors, shuffled
+function MC(p,correct,wrong,x,extra){
+  const o=shuffle([correct,...wrong.filter(w=>w!==correct)]);
+  return Object.assign({p,kind:'mc',o,a:o.indexOf(correct),x,ans:correct},extra||{});
+}
+function TXT(p,acc,x,extra){
+  const list=Array.isArray(acc)?acc:[acc];
+  return Object.assign({p,kind:'txt',acc:list.map(norm),x,ans:list[0]},extra||{});
+}
+const distract=(pool,correct,n)=>shuffle(pool.filter(v=>v!==correct)).slice(0,n);
+
+// ---------- data ----------
+const DEV=[
+ ['hub','stuurt alles wat binnenkomt door naar álle poorten','sw'],
+ ['switch','onthoudt welk MAC-adres op welke poort zit en stuurt data alleen naar de juiste poort','sw'],
+ ['bridge','verbindt twee netwerksegmenten tot één netwerk en laat alleen door wat naar de overkant moet','br'],
+ ['router','verbindt verschillende netwerken, zoekt de weg ertussen en doet NAT','rt'],
+ ['modem','zet het signaal van de lijn van de provider (DSL, coax of glasvezel) om naar netwerkdata','md'],
+ ['access point','maakt een wifi-netwerk en verbindt draadloze toestellen met het bekabelde netwerk','ap'],
+ ['repeater','vangt het wifi-signaal op en zendt het opnieuw uit, voor een groter bereik','rp'],
+ ['firewall','bekijkt elk pakketje en beslist met regels: doorlaten of blokkeren','fw'],
+ ['powerline-adapter','brengt het netwerk via de elektriciteitskabels in huis naar een andere kamer','pl'],
+ ['PoE-injector','stopt stroom in de netwerkkabel voor een camera of access point zonder stopcontact','poe'],
+ ['netwerkkaart (NIC)','is de deur van een computer naar het netwerk, met een uniek MAC-adres','nic'],
+ ['server','biedt diensten aan vele anderen (bestanden, mail, websites) en draait 24/7','srv'],
+ ['laag 3-switch','schakelt op MAC-adres én kan routeren tussen netwerken op IP-adres','sw'],
+ ['managed switch','kan je instellen: VLAN\'s, QoS, monitoring en poorten uitzetten','sw']
+];
+const OSIQ=[['een hub',1],['een netwerkkabel',1],['een repeater',1],['wifi-signalen door de lucht',1],['een switch',2],['een bridge',2],['een access point',2],['MAC-adressen',2],['een router',3],['IP-adressen',3],['een laag 3-switch',3],['routing: de weg zoeken tussen netwerken',3]];
+const OSIN={1:'Laag 1 · fysiek',2:'Laag 2 · datalink',3:'Laag 3 · netwerk'};
+const PORTS=[['FTP',[20,21],'bestanden overzetten'],['SSH',[22],'veilig op afstand werken'],['Telnet',[23],'onveilig op afstand werken'],['SMTP',[25],'mail versturen'],['DNS',[53],'namen opzoeken'],['HTTP',[80],'surfen'],['POP3',[110],'mail ophalen'],['IMAP',[143],'mail lezen op de server'],['HTTPS',[443],'veilig surfen'],['RDP',[3389],'extern bureaublad']];
+const FW=[
+ ['Je werkt op de trein met de gratis wifi. Welk netwerkprofiel kies je?','Openbaar',['Privé','Domein'],'Op een openbaar netwerk ben je verborgen voor anderen: de veiligste keuze.'],
+ ['Je pc thuis moet bestanden en een printer delen met de andere pc\'s. Welk netwerkprofiel?','Privé',['Openbaar','Domein'],'Privé: je vertrouwt het netwerk, je pc is zichtbaar en kan delen.'],
+ ['Een pc op het bedrijfsnetwerk, beheerd door de IT-dienst. Welk netwerkprofiel?','Domein',['Privé','Openbaar'],'Domein: het netwerk wordt centraal beheerd door de IT-dienst.'],
+ ['Een regel die bepaalt welk verkeer van buitenaf je pc binnen mag, is een …','inbound regel',['outbound regel','NAT-regel'],'Inbound = binnenkomend verkeer.'],
+ ['Een regel die bepaalt welk programma vanaf je pc naar het internet mag, is een …','outbound regel',['inbound regel','DHCP-regel'],'Outbound = uitgaand verkeer.'],
+ ['Een bedrijf wil zijn webserver bereikbaar maken vanaf het internet, maar het interne netwerk beschermen. Waar komt de server?','in de DMZ',['op het gastnetwerk','achter de modem in bridge'],'De DMZ is een aparte zone voor servers die van buitenaf bereikbaar moeten zijn.'],
+ ['Welke firewall beschermt het hele netwerk van een bedrijf?','een hardware-firewall',['de Windows-firewall op elke pc','een antivirusprogramma'],'Een hardware-firewall is een apart toestel tussen het netwerk en het internet.'],
+ ['Op pc 1 zie je alle toestellen in de Verkenner, op pc 2 niet. Wat is de meest waarschijnlijke oorzaak?','Pc 2 staat op Openbaar of netwerkdetectie staat uit',['Pc 2 heeft een ander MAC-adres','Pc 2 gebruikt een cross kabel'],'Zet het profiel op Privé en schakel netwerkdetectie en bestandsdeling in.'],
+ ['Met welk commando open je de geavanceerde instellingen van de Windows-firewall, met de inbound en outbound rules?','wf.msc',['ncpa.cpl','ipconfig /all'],'wf.msc opent Windows Defender Firewall met geavanceerde beveiliging.'],
+ ['Je installeert een antivirus met een eigen firewall. Wat gebeurt er met de Windows-firewall?','die wordt uitgeschakeld',['die blijft samen actief','die neemt de regels over'],'Twee firewalls tegelijk geven problemen: de andere neemt het werk over.'],
+ ['Bezoekers op kantoor moeten op internet, maar mogen niet aan de bedrijfsbestanden. Welke functie gebruik je?','een gastnetwerk',['een DMZ','port forwarding'],'Een gastnetwerk geeft alleen internet, zonder toegang tot je eigen toestellen.'],
+ ['Een medewerker wil van thuis veilig inloggen op het bedrijfsnetwerk. Wat heeft hij nodig?','een VPN',['een webfilter','een DMZ'],'Een VPN maakt een versleutelde tunnel naar het bedrijfsnetwerk.'],
+ ['Een school wil sommige websites blokkeren voor leerlingen. Welke firewallfunctie?','een webfilter',['een VPN','een DMZ'],'Een webfilter blokkeert websites of categorieën.'],
+ ['Welke soort firewall beschermt maar één computer?','een software-firewall',['een hardware-firewall','een DMZ'],'Een software-firewall is een programma op één pc, zoals Windows Defender Firewall.']
+];
+const CMDS=[
+ ['Kan ik de DNS-server van Google bereiken?','ping 8.8.8.8'],
+ ['Welke weg volgt het verkeer naar www.microsoft.com?','tracert www.microsoft.com'],
+ ['Welk IP-adres hoort bij www.ubuntu.com?','nslookup www.ubuntu.com'],
+ ['Welke mailserver hoort bij het domein sint-niklaas.be?','nslookup -type=mx sint-niklaas.be'],
+ ['Staat poort 25 open op mail.server.be?','telnet mail.server.be 25'],
+ ['Welke poorten staan open op mijn eigen pc?','netstat -an'],
+ ['Welke IP- en MAC-adressen kent mijn pc in het netwerk?','arp -a'],
+ ['Wat is het MAC-adres van al mijn netwerkkaarten?','getmac /v'],
+ ['Wat zijn mijn IP-adres, gateway, DNS-server en MAC-adres?','ipconfig /all'],
+ ['Op welk kanaal en met welke beveiliging is mijn wifi verbonden?','netsh wlan show interfaces'],
+ ['Welke wifi-netwerken zijn er in de buurt, met hun kanaal?','netsh wlan show networks mode=bssid'],
+ ['Hoe wis ik de opgeslagen DNS-gegevens op mijn pc?','ipconfig /flushdns']
+];
+const STD=[['802.11b','—','1999','2,4 GHz','11 Mbit/s'],['802.11a','—','1999','5 GHz','54 Mbit/s'],['802.11g','—','2003','2,4 GHz','54 Mbit/s'],['802.11n','Wi-Fi 4','2009','2,4 en 5 GHz','600 Mbit/s'],['802.11ac','Wi-Fi 5','2014','5 GHz','6,9 Gbit/s'],['802.11ax','Wi-Fi 6','2019','2,4 en 5 GHz','9,6 Gbit/s'],['802.11be','Wi-Fi 7','2024','2,4, 5 en 6 GHz','46 Gbit/s']];
+const CAT=[['Cat 5','100 Mbit/s'],['Cat 5e','1 Gbit/s'],['Cat 6','1 Gbit/s (10 Gbit/s tot 55 m)'],['Cat 6A','10 Gbit/s tot 100 m'],['Cat 8','40 Gbit/s tot 30 m']];
+const OM=[['OM1','62,5 µm','275 m','33 m','—'],['OM2','50 µm','550 m','82 m','—'],['OM3','50 µm','800 m','300 m','100 m'],['OM4','50 µm','1100 m','400 m','150 m'],['OS1/OS2','9 µm','100 km','40 km','40 km']];
+
+// ---------- exercise modules ----------
+const M={
+apparaat:{t:'Welk apparaat?',ch:3,gen(){
+  const d=pick(DEV);
+  const pool=DEV.filter(x=>x[2]!==d[2]).map(x=>x[0]);
+  return MC(`Welk toestel <b>${d[1]}</b>?`,d[0],distract(pool,d[0],3),`Een <b>${d[0]}</b> ${d[1]}.`);
+}},
+osilaag:{t:'Welke OSI-laag?',ch:2,gen(){
+  const [w,l]=pick(OSIQ);
+  return MC(`Op welke OSI-laag werkt <b>${w}</b>?`,OSIN[l],[OSIN[1],OSIN[2],OSIN[3]],
+   l===1?'Laag 1 gaat over signalen en hardware: kabels, hubs, repeaters en radiogolven.':l===2?'Laag 2 werkt met MAC-adressen: switch, bridge en access point.':'Laag 3 werkt met IP-adressen en zoekt de weg tussen netwerken: router en laag 3-switch.');
+}},
+mac:{t:'MAC-adres',ch:1,gen(){
+  const b=Array.from({length:6},()=>rand(0,255));
+  const mac=b.map(hx2).join('-');
+  const k=rand(0,2);
+  if(k===0) return TXT(`Welk deel van <code>${mac}</code> is de OUI, het nummer van de fabrikant?`,[b.slice(0,3).map(hx2).join('-'),b.slice(0,3).map(hx2).join(':'),b.slice(0,3).map(hx2).join('')],`De eerste 3 paren zijn de OUI: <code>${b.slice(0,3).map(hx2).join('-')}</code>. De laatste 3 paren kiest de fabrikant zelf.`,{ph:'XX-XX-XX',mono:true});
+  if(k===1){
+    const bad=Math.random()<.5; let s=mac, why='Zes paren hexa (0–9 en A–F): geldig.';
+    if(bad){const t=rand(0,2);
+      if(t===0){const i=rand(0,16); if(s[i]==='-') {s=s.slice(0,i+1)+pick('GHKMXZ')+s.slice(i+2);} else s=s.slice(0,i)+pick('GHKMXZ')+s.slice(i+1); why='Er staat een letter in die niet bestaat in hexa: alleen 0–9 en A–F mogen.';}
+      else if(t===1){s=b.slice(0,5).map(hx2).join('-'); why='Er staan maar 5 paren: een MAC-adres heeft er 6 (48 bits).';}
+      else {s=mac+'-'+hx2(rand(0,255)); why='Er staan 7 paren: een MAC-adres heeft er 6 (48 bits).';}}
+    return MC(`Is <code>${s}</code> een geldig MAC-adres?`,bad?'Ongeldig':'Geldig',[bad?'Geldig':'Ongeldig'],why);
+  }
+  const w=pick([['een MAC-adres','48','6 paren hexa × 8 bits = 48 bits.'],['een IPv4-adres','32','4 getallen van 8 bits = 32 bits.'],['de OUI van een MAC-adres','24','3 paren × 8 bits = 24 bits.']]);
+  return TXT(`Hoeveel bits is ${w[0]}?`,[w[1],w[1]+' bits'],w[2],{ph:'aantal bits',mono:true});
+}},
+switchsoort:{t:'Soorten switches',ch:2,gen(){
+  const B=[
+   ['De meeste mensen hebben thuis een switch die je gewoon insteekt, zonder instellingen. Welk type?','unmanaged switch',['managed switch','laag 3-switch'],'Unmanaged: plug and play, niets in te stellen.'],
+   ['Een bedrijf wil VLAN\'s maken en verkeer opvolgen. Welk type switch?','managed switch',['unmanaged switch','hub'],'Een managed switch kan je instellen via een webpagina.'],
+   ['Een switch moet ook verkeer tussen twee netwerken doorsturen op IP-adres. Welk type?','laag 3-switch',['laag 2-switch','unmanaged switch'],'Een laag 3-switch kan ook routeren.'],
+   ['Je wil camera\'s en access points stroom geven via de netwerkkabel. Waar let je op bij de switch?','PoE',['QoS','VLAN'],'PoE = Power over Ethernet: stroom en data door één kabel.'],
+   ['Een switch is eigenlijk een … met veel poorten.','bridge',['hub','router'],'Een bridge verbindt segmenten en filtert op MAC-adres, net als een switch.'],
+   ['Waarom is een switch beter dan een hub?','hij stuurt data alleen naar de juiste poort',['hij is goedkoper','hij geeft IP-adressen uit'],'Een hub stuurt alles naar alle poorten: traag en onveilig.']];
+  const q=pick(B); return MC(q[0],q[1],q[2],q[3]);
+}},
+kastje:{t:'Modem, router, NAT of bridge',ch:3,gen(){
+  if(Math.random()<.6){
+    const S=[['zet het signaal van de lijn van de provider om','Modem'],['heeft het publieke IP-adres','Modem'],['zit aan de kant van het WAN','Modem'],['deelt privé-IP-adressen uit met DHCP','Router'],['vertaalt privé-adressen naar één publiek adres (NAT)','Router'],['is de default gateway van je pc','Router'],['maakt je thuisnetwerk (LAN)','Router']];
+    const s=pick(S); return MC(`Welk toestel <b>${s[0]}</b>?`,s[1],[s[1]==='Modem'?'Router':'Modem','Switch'],'Modem: brengt het internet naar je huis. Router: brengt het internet naar je toestellen.');
+  }
+  const B=[
+   ['Je wil een eigen, betere router achter het kastje van de provider, zonder dubbele NAT. Hoe zet je het kastje?','in bridge-modus',['in router-modus (NAT)','als access point'],'In bridge-modus werkt het kastje alleen als modem; je eigen router doet NAT.'],
+   ['Bij bijna iedereen thuis doet het kastje van de provider alles zelf: NAT, DHCP en wifi. In welke stand staat het?','router-modus (NAT)',['bridge-modus','DMZ-modus'],'Router-modus is de standaard.'],
+   ['Wat is het probleem als twee routers achter elkaar allebei NAT doen?','dubbele NAT: problemen met gamen en VPN',['de wifi wordt sneller','de pc krijgt geen MAC-adres'],'Dubbele NAT vermijd je met bridge-modus.'],
+   ['Welke functie zit NIET in een gewoon alles-in-één-kastje van de provider?','een DMZ-server met websites',['een access point','een switch met LAN-poorten'],'Een alles-in-één bevat modem, router, switch, access point en firewall.'],
+   ['Wat is het verschil tussen een pc en een server?','een server biedt diensten aan velen en draait 24/7',['een server heeft geen netwerkkaart','een pc heeft altijd RAID'],'Servers hebben ook reserve-onderdelen zoals een dubbele voeding en RAID.']];
+  const q=pick(B); return MC(q[0],q[1],q[2],q[3]);
+}},
+poorten:{t:'Poorten',ch:4,gen(){
+  const p=pick(PORTS), k=rand(0,2);
+  const nums=p[1].join(' en ');
+  if(k===0) return TXT(`Welke poort gebruikt <b>${p[0]}</b>?`,[...p[1].map(String),p[1].join('/'),p[1].join(' en '),p[1].join(',')],`${p[0]} gebruikt poort <b>${nums}</b>: ${p[2]}.`,{ph:'poortnummer',mono:true});
+  const others=PORTS.filter(x=>x!==p).map(x=>x[0]);
+  if(k===1) return MC(`Welk protocol gebruikt poort <b>${nums}</b>?`,p[0],distract(others,p[0],3),`Poort ${nums} is ${p[0]}: ${p[2]}.`);
+  return MC(`Welk protocol gebruik je voor <b>${p[2]}</b>?`,p[0],distract(others,p[0],3),`${p[0]} (poort ${nums}).`);
+}},
+firewall:{t:'Firewall en profielen',ch:4,gen(){const q=pick(FW); return MC(q[0],q[1],q[2],q[3]);}},
+commando:{t:'Welk commando?',ch:5,gen(){
+  const c=pick(CMDS);
+  const q=MC(c[0],c[1],distract(CMDS.map(x=>x[1]),c[1],3),`<code>${esc(c[1])}</code>`,{code:true});
+  return q;
+}},
+scanlezen:{t:'Lees een scan',ch:5,gen(){
+  const n=pick(['192.168.1','192.168.0','10.0.0']);
+  const rows=shuffle([
+    [`${n}.1`,pick(['bbox.lan','telenet.router','router.home']),pick(['Sagemcom','Technicolor','AVM']),'router'],
+    [`${n}.${rand(20,40)}`,`DESKTOP-${pick(['KAAT','LIAM','NOOR','SEPPE'])}`,pick(['ASUSTek','Dell','Lenovo']),'pc'],
+    [`${n}.${rand(41,60)}`,pick(['HP-LaserJet','EPSON-WF','Brother-HL']),pick(['HP','Seiko Epson','Brother']),'printer'],
+    [`${n}.${rand(61,90)}`,pick(['Galaxy-S24','iPhone-van-Ella','Pixel-8']),pick(['Samsung','Apple','Google']),'gsm'],
+    [`${n}.${rand(91,120)}`,'—',pick(['Hikvision','Reolink']),'IP-camera']]);
+  const tbl=`<div class="tw"><table><thead><tr><th>IP-adres</th><th>Naam</th><th>Fabrikant</th></tr></thead><tbody>${rows.map(r=>`<tr><td><code>${r[0]}</code></td><td>${esc(r[1])}</td><td>${r[2]}</td></tr>`).join('')}</tbody></table></div>`;
+  const target=pick(['router','printer','IP-camera','gsm']);
+  const r=rows.find(x=>x[3]===target);
+  const why={router:'Het adres op .1 met een naam van de provider is bijna altijd de router: daar zit ook de firewall en de default gateway.',printer:'De naam en de fabrikant (HP, Epson, Brother) verraden de printer.','IP-camera':'Hikvision en Reolink maken camera\'s.',gsm:'Samsung, Apple en Google met een gsm-naam.'}[target];
+  return MC(`Je scande het netwerk met een IP-scanner.${tbl}Welk adres is waarschijnlijk <b>de ${target}</b>?`,r[0],rows.filter(x=>x!==r).map(x=>x[0]).slice(0,3),why,{code:true});
+}},
+buurcfg:{t:'Wat is er mis?',ch:5,gen(){
+  const x=rand(0,20), net=`192.168.${x}`, ip=`${net}.${rand(20,200)}`;
+  const t=pick(['dns','gw','apipa','ok','kabel']);
+  const mac=Array.from({length:6},()=>hx2(rand(0,255))).join('-');
+  let c={dhcp:pick(['ja','nee']),ip,mask:'255.255.255.0',gw:`${net}.1`,dns:`${net}.1`,media:''};
+  if(t==='dns'){c.dhcp='nee';c.dns=ip;}
+  if(t==='gw'){c.dhcp='nee';c.gw=`192.168.${x+1}.1`;}
+  if(t==='apipa'){c.dhcp='ja';c.ip=`169.254.${rand(1,254)}.${rand(1,254)}`;c.mask='255.255.0.0';c.gw='';c.dns='';}
+  if(t==='kabel'){c.media='Medium ontkoppeld';}
+  const block=c.media?`Ethernet-adapter Ethernet:\n\n   Mediumstatus . . . . . . . . : ${c.media}\n   Fysiek adres . . . . . . . . : ${mac}`:
+  `Ethernet-adapter Ethernet:\n\n   Fysiek adres . . . . . . . . : ${mac}\n   DHCP ingeschakeld. . . . . . : ${c.dhcp}\n   IPv4-adres . . . . . . . . . : ${c.ip}\n   Subnetmasker . . . . . . . . : ${c.mask}\n   Standaardgateway . . . . . . : ${c.gw}\n   DNS-servers. . . . . . . . . : ${c.dns}`;
+  const O={dns:'De DNS-server is fout: het is de pc zelf',gw:'De gateway ligt in een ander netwerk',apipa:'Geen adres van de DHCP-server gekregen (APIPA)',kabel:'Er zit geen netwerkkabel in',ok:'Alles is in orde'};
+  const X={dns:'Als DNS-server staat het eigen adres. Namen worden niet opgezocht: ping naar 8.8.8.8 lukt, maar websites laden niet. Zet de DNS op de router of op automatisch.',gw:`De gateway moet in hetzelfde netwerk liggen (${net}.x). Nu kan de pc de router niet bereiken.`,apipa:'Een adres dat begint met 169.254 krijg je als de DHCP-server niet antwoordt.',kabel:'"Medium ontkoppeld" betekent: geen kabel of geen verbinding op die poort.',ok:'IP-adres, gateway en DNS liggen in hetzelfde netwerk en zijn geldig.'};
+  return MC(`Een pc kan niet op internet. Dit toont <code>ipconfig /all</code>:<pre class="term">${esc(block)}</pre>Wat is er aan de hand?`,O[t],Object.values(O),X[t]);
+}},
+ipsoort:{t:'IPv4: soort adres',ch:0,gen(){
+  const k=pick(['prive','prive','publiek','apipa','loop']);
+  let a;
+  if(k==='prive') a=pick([`192.168.${rand(0,255)}.${rand(1,254)}`,`10.${rand(0,255)}.${rand(0,255)}.${rand(1,254)}`,`172.${rand(16,31)}.${rand(0,255)}.${rand(1,254)}`]);
+  if(k==='publiek') a=`${pick([8,34,54,81,91,109,142,178,195,212])}.${rand(0,255)}.${rand(0,255)}.${rand(1,254)}`;
+  if(k==='apipa') a=`169.254.${rand(1,254)}.${rand(1,254)}`;
+  if(k==='loop') a=`127.0.0.${rand(1,9)}`;
+  const N={prive:'privé',publiek:'publiek',apipa:'APIPA (geen DHCP)',loop:'loopback (de pc zelf)'};
+  const X={prive:'Privé-adressen: 10.x.x.x, 172.16–31.x.x en 192.168.x.x. Ze werken alleen in je eigen netwerk.',publiek:'Dit adres valt niet in een privé-, APIPA- of loopbackreeks: het is publiek, bereikbaar op het internet.',apipa:'169.254.x.x krijg je als de DHCP-server niet antwoordt.',loop:'127.x.x.x is de pc zelf.'};
+  return MC(`Wat voor adres is <code>${a}</code>?`,N[k],Object.values(N),X[k]);
+}},
+samenet:{t:'IPv4: zelfde netwerk?',ch:0,gen(){
+  const x=rand(0,30), y=Math.random()<.5?x:x+rand(1,3);
+  const a=`192.168.${x}.${rand(2,250)}`, b=`192.168.${y}.${rand(2,250)}`;
+  if(Math.random()<.4) return TXT(`Wat is het netwerkdeel van <code>${a}</code> met masker <code>255.255.255.0</code> (/24)?`,[`192.168.${x}`,`192.168.${x}.0`],`Bij /24 zijn de eerste 3 getallen het netwerkdeel: <code>192.168.${x}</code>.`,{ph:'bv. 10.0.0',mono:true});
+  return MC(`Masker <code>255.255.255.0</code>. Zitten <code>${a}</code> en <code>${b}</code> in hetzelfde netwerk?`,x===y?'Ja':'Nee',[x===y?'Nee':'Ja'],x===y?'De eerste 3 getallen zijn gelijk: zelfde netwerk.':'Het derde getal verschilt: ander netwerk. Ze hebben een router nodig.');
+}},
+kabel:{t:'Kabel kiezen',ch:7,gen(){
+  const O=['UTP Cat 5e','UTP Cat 6A','STP of FTP','Multimode glasvezel','Singlemode glasvezel','Coax'];
+  const k=rand(0,5); let p,a,x;
+  if(k===0){const d=rand(10,90);p=`Thuis, ${d} m naar de zolder, 1 Gbit/s, geen storing.`;a='UTP Cat 5e';x='Onder 100 m en 1 Gbit/s: UTP volstaat. Cat 5e is het minimum, Cat 6 is toekomstgericht.';}
+  if(k===1){const d=rand(60,95);p=`In een kantoor, ${d} m kabel, 10 Gbit/s.`;a='UTP Cat 6A';x='10 Gbit/s over meer dan 55 m: Cat 6A (Cat 6 haalt 10 Gbit/s maar tot 55 m).';}
+  if(k===2){p=`In een fabriekshal langs zware machines en stroomkabels, ${rand(20,80)} m, 1 Gbit/s.`;a='STP of FTP';x='Bij veel elektrische storing kies je een afgeschermde kabel: STP of FTP.';}
+  if(k===3){const d=rand(120,380);p=`Tussen twee bedrijfsgebouwen, ${d} m, 10 Gbit/s.`;a='Multimode glasvezel';x='Meer dan 100 m: koper kan niet. Multimode OM3 haalt 10 Gbit/s tot 300 m, OM4 tot 400 m. Glas geleidt ook geen stroom tussen gebouwen.';}
+  if(k===4){const d=rand(2,30);p=`Twee vestigingen liggen ${d} km uit elkaar.`;a='Singlemode glasvezel';x='Kilometers ver haal je alleen met singlemode (9 µm kern, laser).';}
+  if(k===5){p='Tv-signaal en internet van Telenet tot aan de modem.';a='Coax';x='Telenet brengt tv en internet binnen via coax.';}
+  return MC(`Welke kabel kies je? Neem de goedkoopste die volstaat.<br><b>${p}</b>`,a,O,x);
+}},
+categorie:{t:'Categorieën',ch:6,gen(){
+  if(Math.random()<.5){const c=pick(CAT); return MC(`Wat is de maximale snelheid van <b>${c[0]}</b>?`,c[1],CAT.map(x=>x[1]),'Hoe hoger de categorie, hoe sneller: Cat 5 100 Mbit/s · 5e 1 Gbit/s · 6 1 Gbit/s (10 tot 55 m) · 6A 10 Gbit/s · 8 40 Gbit/s tot 30 m.');}
+  const S=[['100 Mbit/s over 50 m','Cat 5'],['1 Gbit/s over 80 m','Cat 5e'],['10 Gbit/s over 40 m','Cat 6'],['10 Gbit/s over 90 m','Cat 6A'],['40 Gbit/s over 20 m in een datacenter','Cat 8']];
+  const s=pick(S); return MC(`Welke categorie heb je <b>minimaal</b> nodig voor ${s[0]}?`,s[1],CAT.map(x=>x[0]),'Cat 6 haalt 10 Gbit/s maar tot 55 m; daarboven heb je Cat 6A nodig. Cat 8 is voor korte afstanden in datacenters.');
+}},
+straightcross:{t:'Straight of cross',ch:6,gen(){
+  const P=[['pc','switch','Straight'],['router','switch','Straight'],['pc','router','Cross'],['pc','pc','Cross'],['switch','switch','Cross'],['router','router','Cross']];
+  const p=pick(P);
+  return MC(`Je verbindt een <b>${p[0]}</b> met een <b>${p[1]}</b>, zonder auto-MDIX. Welke kabel heb je nodig?`,p[2],['Straight','Cross'],'Verschillende toestellen (pc ↔ switch, router ↔ switch): straight. Gelijke toestellen (pc ↔ pc, switch ↔ switch, pc ↔ router): cross. Met auto-MDIX werkt een straight kabel altijd.');
+}},
+glasvezel:{t:'Glasvezel en coax',ch:7,gen(){
+  if(Math.random()<.35){const B=[
+    ['Welke kern heeft singlemode glasvezel?','9 µm',['50 µm','62,5 µm'],'Singlemode: een heel dunne kern van 9 µm, met een laser.'],
+    ['Wat is het grote verschil tussen singlemode en multimode?','singlemode haalt kilometers, multimode honderden meters',['multimode is altijd sneller','singlemode is van plastic'],'Singlemode: dunne kern, laser, km\'s. Multimode: dikkere kern, goedkopere lichtbron, honderden meters.'],
+    ['Wat is de volgorde van een coaxkabel, van binnen naar buiten?','kern, isolatie, mantel, buitenmantel',['mantel, kern, isolatie, buitenmantel','kern, mantel, isolatie, buitenmantel'],'Koperen kern, kunststof isolatie, gevlochten afscherming (mantel), beschermlaag.'],
+    ['Waarom heeft glasvezel geen last van elektrische storing?','het stuurt licht in plaats van stroom',['het is afgeschermd met folie','het gebruikt radiogolven'],'Glas geleidt geen stroom: geen storing en geen stroomgeleiding tussen gebouwen.']];
+    const q=pick(B); return MC(q[0],q[1],q[2],q[3]);}
+  const r=pick(OM.slice(0,4)), sp=pick([[2,'1 Gbit/s'],[3,'10 Gbit/s']]);
+  const vals=[...new Set(OM.slice(0,4).map(x=>x[sp[0]]))];
+  return MC(`Hoe ver haal je <b>${sp[1]}</b> met multimode <b>${r[0]}</b>?`,r[sp[0]],vals,`Uit de tabel: ${r[0]} (${r[1]}) haalt ${sp[1]} tot ${r[sp[0]]}. Hoe sneller, hoe korter de afstand bij multimode.`);
+}},
+wifistd:{t:'Wifi-standaarden',ch:8,gen(){
+  const newer=STD.slice(3), k=rand(0,2);
+  if(k===0){const s=pick(newer); return MC(`Wat is de andere naam voor <b>${s[0]}</b>?`,s[1],newer.map(x=>x[1]),`${s[0]} = ${s[1]} (${s[2]}).`);}
+  if(k===1){const s=pick(newer); return MC(`Welke standaard heet <b>${s[1]}</b>?`,s[0],newer.map(x=>x[0]),`${s[1]} = ${s[0]}.`);}
+  const s=pick(STD); return MC(`Op welke frequentie werkt <b>${s[0]}</b>${s[1]!=='—'?` (${s[1]})`:''}?`,s[3],[...new Set(STD.map(x=>x[3]))],`${s[0]}: ${s[3]}, max. ${s[4]}.`);
+}},
+band:{t:'2,4 of 5 GHz',ch:8,gen(){
+  const B=[['Je wil wifi ver in de tuin, door een paar muren.','2,4 GHz','2,4 GHz heeft een groter bereik en gaat beter door muren.'],['Je zit naast de router en wil de hoogste snelheid.','5 GHz','5 GHz is veel sneller, maar heeft een kleiner bereik.'],['In een appartementsblok storen tientallen wifi-netwerken elkaar.','5 GHz','5 GHz heeft veel meer kanalen, dus minder storing.'],['Welke band krijgt ook storing van bluetooth en de microgolfoven?','2,4 GHz','Bluetooth en microgolfovens werken ook rond 2,4 GHz.'],['Welke band heeft maar 3 kanalen die elkaar niet storen?','2,4 GHz','In 2,4 GHz overlappen de kanalen: alleen 1, 6 en 11 storen elkaar niet.']];
+  const b=pick(B); return MC(b[0],b[1],['2,4 GHz','5 GHz'],b[2]);
+}},
+mimo:{t:'MIMO, mesh en draadloos',ch:10,gen(){
+  const B=[
+   ['30 mensen gebruiken tegelijk wifi. Welke techniek laat de router meerdere toestellen tegelijk bedienen?','MU-MIMO',['SU-MIMO','WEP'],'MU-MIMO: Multi User, meerdere toestellen tegelijk. SU-MIMO bedient ze na elkaar.'],
+   ['Een groot huis met drie verdiepingen moet overal goede wifi hebben, met één netwerknaam. Wat kies je?','mesh-wifi',['een repeater','een hub'],'Mesh: meerdere nodes vormen samen één netwerk, je gsm wisselt ongemerkt.'],
+   ['Een magazijn ligt 2 km verderop, aan de overkant van een snelweg. Graven kan niet.','een straalverbinding',['een UTP-kabel','een repeater'],'Twee schotels die elkaar zien, tot kilometers ver.'],
+   ['Een berghut ver van alles heeft internet nodig.','satellietinternet',['glasvezel','een straalverbinding naar de buren'],'Satelliet: overal bereikbaar, maar met vertraging en vaak een datalimiet.'],
+   ['Wat betekent 3x3 MIMO?','3 antennes om te zenden en 3 om te ontvangen',['3 wifi-netwerken','3 kanalen tegelijk'],'MIMO = Multiple Input, Multiple Output: meerdere antennes, meerdere datastromen.'],
+   ['Wat is een nadeel van een gewone repeater?','de snelheid zakt vaak tot de helft',['hij werkt alleen met kabel','hij heeft geen MAC-adres'],'Een repeater herhaalt het signaal en deelt de zendtijd.'],
+   ['Welk nadeel heeft satellietinternet?','vertraging (latency)',['geen bereik op het platteland','het werkt alleen met kabel'],'Het signaal moet heel ver reizen: tot de satelliet en terug.']];
+  const q=pick(B); return MC(q[0],q[1],q[2],q[3]);
+}},
+kanaal:{t:'Kanalen',ch:9,gen(){
+  if(Math.random()<.3){const a=rand(1,13), b=rand(1,13); if(a===b) return this.gen(); const ov=Math.abs(a-b)<5;
+    return MC(`Overlappen wifi-kanaal <b>${a}</b> en <b>${b}</b> in de 2,4 GHz-band?`,ov?'Ja, ze storen elkaar':'Nee',['Ja, ze storen elkaar','Nee'],'Kanalen moeten minstens 5 uit elkaar liggen om elkaar niet te storen. Daarom gebruik je 1, 6 en 11.');}
+  let counts, best;
+  do{counts={1:rand(0,4),6:rand(0,4),11:rand(0,4)}; const m=Math.min(...Object.values(counts)); best=Object.keys(counts).filter(k=>counts[k]===m);}while(best.length!==1);
+  const list=shuffle([].concat(...Object.entries(counts).map(([k,v])=>Array(v).fill(+k)))).join(', ')||'geen';
+  return TXT(`Je wifi-scan toont buren op deze kanalen (2,4 GHz): <b>${list}</b>. Welk kanaal kies je voor je eigen router?`,[best[0]],`Kies uit 1, 6 en 11 het kanaal met de minste buren: <b>${best[0]}</b>.`,{ph:'kanaal',mono:true});
+}},
+beveiliging:{t:'Wifi-beveiliging',ch:9,gen(){
+  const B=[
+   ['Welke wifi-beveiliging is vandaag het veiligst?','WPA3',['WPA2','WEP','WPA'],'WPA3 is de nieuwste en veiligste.'],
+   ['Welke beveiliging is in enkele minuten te kraken en mag je nooit meer gebruiken?','WEP',['WPA2','WPA3'],'WEP komt uit 1997 en is totaal onveilig.'],
+   ['Waarom schakel je WPS uit?','de knop of pincode is een zwakke plek',['het maakt wifi trager','het verbergt je netwerk'],'Met WPS kan een aanvaller de pincode raden.'],
+   ['Is het SSID verbergen een echte beveiliging?','nee, met een wifi-scanner vind je het toch',['ja, dan kan niemand verbinden','ja, want het versleutelt alles'],'Verbergen en een MAC-filter zijn extra, maar makkelijk te omzeilen.'],
+   ['Op school logt elke leerling in met zijn eigen gegevens op de wifi. Hoe heet dat?','WPA2/WPA3-Enterprise',['WPA2-Personal','WEP'],'Enterprise: elke gebruiker heeft eigen inloggegevens, beheerd met certificaten en een server.'],
+   ['Zet de beveiligingen van zwak naar sterk.','WEP, WPA, WPA2, WPA3',['WPA, WEP, WPA3, WPA2','WPA3, WPA2, WPA, WEP'],'WEP (1997) → WPA (tijdelijk) → WPA2 (jarenlang de standaard) → WPA3.'],
+   ['Je wil je thuiswifi zo veilig mogelijk maken. Wat kies je?','WPA3 en WPS uit',['WEP met een lang wachtwoord','alleen het SSID verbergen'],'WPA3 met een sterk wachtwoord, en WPS uitschakelen.']];
+  const q=pick(B); return MC(q[0],q[1],q[2],q[3]);
+}},
+netshlees:{t:'Lees netsh wlan',ch:9,gen(){
+  const s=pick(STD.slice(3)), ch=pick(s[0]==='802.11ac'?[36,40,44,48,100,112]:[1,6,11,36,44,100]);
+  const auth=pick(['WPA2-Personal','WPA3-Personal','WPA2-Enterprise','Open']);
+  const out=`C:\\> netsh wlan show interfaces\n\n   SSID                   : ${pick(['School-WiFi','telenet-5A21C','Proximus-Home-3F2','Gasten'])}\n   Radiotype              : ${s[0]}\n   Verificatie            : ${auth}\n   Kanaal                 : ${ch}\n   Signaal                : ${rand(40,99)}%`;
+  const k=rand(0,2);
+  if(k===0) return MC(`<pre class="term">${esc(out)}</pre>Welke wifi-generatie is dit?`,s[1],STD.slice(3).map(x=>x[1]),`Radiotype ${s[0]} = ${s[1]}.`);
+  if(k===1) return MC(`<pre class="term">${esc(out)}</pre>In welke band zit deze verbinding?`,ch>14?'5 GHz':'2,4 GHz',['2,4 GHz','5 GHz'],'Kanalen 1 tot 13 zijn 2,4 GHz; kanalen vanaf 36 zijn 5 GHz.');
+  const safe=auth==='Open'?'Nee, er is geen beveiliging':auth.startsWith('WPA3')?'Ja, WPA3 is het veiligst':'Ja, maar WPA3 is nog veiliger';
+  return MC(`<pre class="term">${esc(out)}</pre>Is deze verbinding goed beveiligd?`,safe,['Nee, er is geen beveiliging','Ja, WPA3 is het veiligst','Ja, maar WPA3 is nog veiliger'],'Open = geen versleuteling. WPA2 is oké, WPA3 is het veiligst.');
+}}
+};
+const CHN={0:'IPv4 herhaling',1:'1 · Netwerkkaart en MAC',2:'2 · Hub, switch en bridge',3:'3 · Router, modem en gateway',4:'4 · Firewall en poorten',5:'5 · Apparaten opsporen',6:'6 · Twisted pair',7:'7 · Coax en glasvezel',8:'8 · Wifi-standaarden',9:'9 · Wifi: beveiliging en kanalen',10:'10 · Op afstand'};
+const REQ=['mac','osilaag','apparaat','kastje','poorten','firewall','commando','buurcfg','kabel','categorie','wifistd','kanaal','beveiliging'];
+const NEED=2, TEACHER_PIN='2026';
+const TEST_PLAN=[['apparaat',2],['osilaag',1],['mac',2],['switchsoort',1],['kastje',2],['poorten',2],['firewall',2],['commando',2],['buurcfg',1],['scanlezen',1],['ipsoort',1],['samenet',1],['kabel',2],['categorie',1],['straightcross',1],['glasvezel',1],['wifistd',2],['band',1],['kanaal',1],['beveiliging',2],['mimo',1]];
+
+// extra "test jezelf" vragen per hoofdstuk (bovenop de quizvraag uit de les)
+const QX={
+1:[{q:'Hoeveel bits is een MAC-adres?',o:['32','48','128'],a:1,w:'6 paren hexa × 8 bits = 48 bits.'},{q:'Waarom werkt een MAC-filter soms niet voor een gsm?',o:['Gsm\'s gebruiken vaak een willekeurig MAC-adres per wifi-netwerk','Gsm\'s hebben geen MAC-adres','Een MAC-filter werkt alleen met kabel'],a:0,w:'Een willekeurig (privé) MAC-adres beschermt je privacy, maar dan herkent de router je toestel niet.'}],
+2:[{q:'Op welke laag werkt een hub?',o:['Laag 1','Laag 2','Laag 3'],a:0,w:'Een hub stuurt alleen signalen door: laag 1.'},{q:'Wat kan een laag 3-switch extra?',o:['Routeren tussen netwerken','Wifi maken','IP-adressen versleutelen'],a:0,w:'Een laag 3-switch kan verkeer tussen netwerken doorsturen op IP-adres.'}],
+3:[{q:'Welk toestel heeft het publieke IP-adres?',o:['De modem','De switch','De netwerkkaart'],a:0,w:'De modem zit aan de WAN-kant en heeft het publieke adres.'},{q:'Wat is de default gateway?',o:['Het adres van de router: de deur naar buiten','Het MAC-adres van je pc','De DNS-server van Google'],a:0,w:'Je ziet de default gateway in ipconfig.'}],
+4:[{q:'Welke poort gebruikt HTTPS?',o:['80','443','25'],a:1,w:'HTTPS: veilig surfen via poort 443.'},{q:'Welk netwerkprofiel kies je in een café?',o:['Privé','Openbaar','Domein'],a:1,w:'Openbaar: je pc is verborgen voor anderen.'}],
+5:[{q:'Mag je zomaar elk netwerk scannen?',o:['Ja, het is gratis software','Nee, alleen je eigen netwerk of met toestemming','Alleen \'s nachts'],a:1,w:'Scan alleen je eigen netwerk of met toestemming van de beheerder.'},{q:'Welk commando toont de mailserver van een domein?',o:['nslookup -type=mx','tracert','arp -a'],a:0,w:'MX-records wijzen naar de mailserver.'}],
+6:[{q:'Hoe lang mag een twisted pair-kabel maximaal zijn?',o:['55 m','100 m','500 m'],a:1,w:'Maximaal 100 meter per kabel.'},{q:'Wat is het minimum vandaag voor 1 Gbit/s?',o:['Cat 5','Cat 5e','Cat 8'],a:1,w:'Cat 5e haalt 1 Gbit/s.'}],
+7:[{q:'Welke glasvezel gebruik je voor kilometers?',o:['Multimode OM1','Singlemode','Plastic (POF)'],a:1,w:'Singlemode haalt tientallen kilometers.'},{q:'Waar kom je coax thuis tegen?',o:['Tv en Telenet-internet','Tussen pc en switch','In een glasvezelkast'],a:0,w:'Telenet brengt tv en internet binnen via coax.'}],
+8:[{q:'Wat is een andere naam voor 802.11ac?',o:['Wi-Fi 4','Wi-Fi 5','Wi-Fi 6'],a:1,w:'802.11ac = Wi-Fi 5.'},{q:'Welke band heeft het grootste bereik?',o:['2,4 GHz','5 GHz'],a:0,w:'2,4 GHz gaat beter door muren.'}],
+9:[{q:'Welke 3 kanalen storen elkaar niet in 2,4 GHz?',o:['1, 6 en 11','1, 2 en 3','36, 40 en 44'],a:0,w:'Alleen 1, 6 en 11 overlappen niet.'},{q:'Met welk commando zie je alle wifi-netwerken in de buurt met hun kanaal?',o:['netsh wlan show networks mode=bssid','ipconfig /all','getmac /v'],a:0,w:'netsh wlan show networks mode=bssid.'}],
+10:[{q:'Wat heb je nodig voor een straalverbinding?',o:['Twee schotels die elkaar zien','Een satelliet','Een coaxkabel'],a:0,w:'Zichtlijn tussen de twee punten is nodig.'}]
+};
+const GLOSS=[['Access point','maakt een wifi-netwerk en verbindt draadloze toestellen met het bekabelde netwerk'],['APIPA','169.254.x.x: adres dat je krijgt als de DHCP-server niet antwoordt'],['Auto-MDIX','toestellen draaien zenden en ontvangen zelf om, zodat een straight kabel altijd werkt'],['Bridge','verbindt twee netwerksegmenten tot één netwerk (laag 2)'],['Bridge-modus','het kastje van de provider werkt alleen als modem; je eigen router doet NAT'],['Cat 5e / 6 / 6A / 8','categorieën twisted pair: 1 Gbit/s, 1 (10 tot 55 m), 10 en 40 Gbit/s'],['Coax','kabel met een koperen kern, isolatie, gevlochten mantel en buitenmantel'],['Default gateway','het adres van de router: de deur naar andere netwerken'],['DHCP','deelt automatisch IP-adressen uit'],['DMZ','aparte zone voor servers die vanaf het internet bereikbaar moeten zijn'],['DNS','zet namen om in IP-adressen (poort 53)'],['Firewall','laat pakketjes door of blokkeert ze op basis van regels'],['FTP / STP','afgeschermde twisted pair: folie rond alle paren of rond elk paar'],['Hub','stuurt alles naar alle poorten (laag 1, verouderd)'],['Inbound / outbound','regels voor binnenkomend / uitgaand verkeer'],['MAC-adres','uniek adres van een netwerkkaart: 48 bits, 6 paren hexa'],['Managed switch','switch die je kan instellen: VLAN, QoS, monitoring'],['Mesh','meerdere access points vormen samen één wifi-netwerk'],['MIMO','meerdere antennes zenden en ontvangen tegelijk'],['Modem','zet het signaal van de lijn van de provider om'],['Multimode','glasvezel met dikkere kern (50 of 62,5 µm), honderden meters'],['NAT','vertaalt privé-adressen naar één publiek adres'],['NIC','Network Interface Card: de netwerkkaart'],['OUI','eerste 3 paren van een MAC-adres: de fabrikant'],['PoE','Power over Ethernet: stroom en data door één kabel'],['Poort','nummer van een dienst op een computer, bv. 443 voor HTTPS'],['Powerline','netwerk via het stopcontact'],['Repeater','herhaalt het wifi-signaal voor een groter bereik'],['Router','verbindt netwerken en zoekt de weg (laag 3)'],['Server','biedt diensten aan vele anderen, draait 24/7'],['Singlemode','glasvezel met dunne kern (9 µm), kilometers ver'],['SSID','de naam van een wifi-netwerk'],['Straalverbinding','draadloze verbinding tussen twee vaste punten met schotels'],['Straight / cross','zelfde volgorde aan beide kanten / zenden en ontvangen gekruist'],['Switch','stuurt data naar de juiste poort op basis van het MAC-adres (laag 2)'],['Teaming','meerdere netwerkkaarten werken samen als één'],['UTP','Unshielded Twisted Pair: gewone netwerkkabel zonder afscherming'],['VLAN','apart netwerk op dezelfde switch'],['VPN','versleutelde tunnel naar een ander netwerk'],['WPA3','de veiligste wifi-beveiliging vandaag'],['WPS','koppelen met een knop of pincode: zwakke plek, zet het uit']];
+
+// ---------- state ----------
+const KEY='netwerkmedia.v1';
+const state={mode:'theory',ch:1,mod:'mac',stats:{},streak:0,unlocked:false,lab:{},q:null,done:false,picked:null,quiz:{}};
+function load(){try{const s=JSON.parse(localStorage.getItem(KEY)||'{}');Object.assign(state,{mode:s.mode||'theory',ch:s.ch??1,mod:s.mod&&M[s.mod]?s.mod:'mac',stats:s.stats||{},streak:s.streak||0,unlocked:!!s.unlocked,lab:s.lab||{}});}catch(e){}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify({mode:state.mode,ch:state.ch,mod:state.mod,stats:state.stats,streak:state.streak,unlocked:state.unlocked,lab:state.lab}));}catch(e){}}
+const st=id=>state.stats[id]||(state.stats[id]={g:0,n:0});
+const totalOk=()=>Object.values(state.stats).reduce((s,x)=>s+x.g,0);
+const progress=()=>REQ.map(id=>({id,g:st(id).g}));
+const isUnlocked=()=>state.unlocked||progress().every(p=>p.g>=NEED);
+function updStats(){$('#st-ok').textContent=totalOk();$('#st-streak').textContent=state.streak;const left=progress().filter(p=>p.g<NEED).length;$('#lockbadge').textContent=isUnlocked()?'open':`${left} te gaan`;}
+
+// ---------- modes ----------
+const MODES=['theory','practice','lab','test'];
+function setMode(m){state.mode=m;save();MODES.forEach(x=>{$('#m-'+x).setAttribute('aria-selected',x===m);$('#v-'+x).hidden=x!==m;});
+  if(m==='theory') drawChapter(); if(m==='practice'){drawMods(); if(!state.q) newQ(); else drawQ(); drawPlan();} if(m==='lab') drawLab(); if(m==='test') drawTest();}
+MODES.forEach(m=>$('#m-'+m).addEventListener('click',()=>{ if(state.mode==='test'&&test.phase==='run'&&m!=='test'){ if(!test.warned){test.warned=true; drawTest('Je toets loopt nog. Klik nog eens om toch te verlaten: dat wordt geteld.'); return;} test.leaves++; } setMode(m);}));
+
+// ---------- theory ----------
+const CHAPS=[...CH,{n:11,les:0,t:'Woordenlijst',s:[],quiz:[]}];
+function drawToc(){
+  const g=[[3,'Netwerkapparatuur'],[4,'Kabels en draadloze media'],[0,'Naslag']];
+  $('#toc').innerHTML=g.map(([les,lab])=>`<div class="nav-group"><p class="nav-label">${lab}</p>${CHAPS.filter(c=>c.les===les).map(c=>`<button type="button" class="nav-item" data-ch="${c.n}" aria-current="${c.n===state.ch}"><span>${c.n>=1&&c.n<=10?c.n+'. ':''}${c.t}</span></button>`).join('')}</div>`).join('');
+  $('#toc').querySelectorAll('[data-ch]').forEach(b=>b.addEventListener('click',()=>{state.ch=+b.dataset.ch;save();drawChapter();window.scrollTo({top:0});}));
+}
+function drawChapter(){
+  drawToc();
+  const c=CHAPS.find(x=>x.n===state.ch)||CHAPS[1];
+  if(c.n===11){
+    $('#chapter').innerHTML=`<p class="eyebrow">Naslag</p><h2>Woordenlijst</h2><p class="lead">Alle begrippen van dit onderwerp, alfabetisch.</p><div class="sec"><label class="field"><span class="small">Zoek een begrip</span><input class="inp" id="gq" type="search" placeholder="bv. NAT" autocomplete="off"></label><dl class="gloss" id="gl"></dl></div>`;
+    const draw=()=>{const f=norm($('#gq').value);$('#gl').innerHTML=GLOSS.filter(g=>!f||norm(g[0]+' '+g[1]).includes(f)).map(g=>`<div><dt>${g[0]}</dt><dd>${g[1]}</dd></div>`).join('')||'<p class="small">Geen begrip gevonden.</p>';};
+    $('#gq').addEventListener('input',draw); draw(); return;
+  }
+  const quiz=[...c.quiz,...(QX[c.n]||[])];
+  const mods=Object.keys(M).filter(id=>M[id].ch===c.n);
+  $('#chapter').innerHTML=`<p class="eyebrow">${c.n?`Hoofdstuk ${c.n}`:'Herhaling'}</p><h2>${c.t}</h2>
+   ${c.s.map(s=>`<section class="sec"><h3>${esc(s.t)}</h3>${s.h}</section>`).join('')}
+   ${quiz.length?`<section class="sec quiz" aria-label="Test jezelf"><h3>Test jezelf</h3>${quiz.map((q,qi)=>`<div class="qz" data-q="${qi}"><p class="qq">${qi+1}. ${esc(q.q)}</p><div class="choices">${q.o.map((o,oi)=>`<button type="button" class="choice" data-o="${oi}"><span class="l">${L[oi]}</span><span>${esc(o)}</span></button>`).join('')}</div><div class="fb" hidden></div></div>`).join('')}</section>`:''}
+   ${mods.length?`<section class="sec"><h3>Oefen dit hoofdstuk</h3><div class="row">${mods.map(id=>`<button type="button" class="btn sec2" data-go="${id}">${M[id].t}</button>`).join('')}</div></section>`:''}
+   <div class="sec row">${c.n>0?`<button type="button" class="btn sec2" data-nav="-1">Vorig hoofdstuk</button>`:''}${c.n<11?`<button type="button" class="btn" data-nav="1">Volgend hoofdstuk</button>`:''}</div>`;
+  $('#chapter').querySelectorAll('.qz').forEach(el=>{const q=quiz[+el.dataset.q];
+    el.querySelectorAll('.choice').forEach(b=>b.addEventListener('click',()=>{const o=+b.dataset.o, ok=o===q.a;
+      el.querySelectorAll('.choice').forEach((x,i)=>{x.disabled=true;if(i===q.a)x.classList.add('right');else if(i===o)x.classList.add('wrong');});
+      const f=el.querySelector('.fb');f.hidden=false;f.className='fb '+(ok?'good':'bad');f.innerHTML=`<b class="t">${ok?'Juist.':'Niet juist.'}</b><p>${esc(q.w)}</p>`;}));});
+  $('#chapter').querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>{state.mod=b.dataset.go;state.q=null;setMode('practice');}));
+  $('#chapter').querySelectorAll('[data-nav]').forEach(b=>b.addEventListener('click',()=>{state.ch=Math.max(0,Math.min(11,c.n+ +b.dataset.nav));save();drawChapter();window.scrollTo({top:0});}));
+}
+
+// ---------- practice ----------
+function drawMods(){
+  const chs=[...new Set(Object.values(M).map(m=>m.ch))].sort((a,b)=>(a===0?99:a)-(b===0?99:b));
+  $('#mods').innerHTML=`<p class="small" style="margin:0 12px"><span class="req"></span>verplicht voor de eindtoets: ${NEED} juist</p>`+chs.map(ch=>`<div class="nav-group"><p class="nav-label">${CHN[ch]}</p>${Object.keys(M).filter(id=>M[id].ch===ch).map(id=>{const s=st(id),r=REQ.includes(id);return `<button type="button" class="nav-item" data-mod="${id}" aria-current="${id===state.mod}"><span>${r?'<span class="req" aria-label="verplicht"></span>':''}${M[id].t}</span><span class="badge ${r&&s.g>=NEED?'ok':''}">${s.g}/${s.n}</span></button>`;}).join('')}</div>`).join('');
+  $('#mods').querySelectorAll('[data-mod]').forEach(b=>b.addEventListener('click',()=>{state.mod=b.dataset.mod;save();newQ();drawMods();if(innerWidth<820)$('#qcard').scrollIntoView({behavior:'smooth'});}));
+}
+let lastP='';
+function newQ(){let q,i=0;do{q=M[state.mod].gen();i++;}while(q.p===lastP&&i<8);lastP=q.p;state.q=q;state.done=false;state.picked=null;drawQ();}
+function answerView(q,prefix){
+  if(q.kind==='mc') return `<div class="choices" role="group" aria-label="Antwoorden">${q.o.map((o,i)=>`<button type="button" class="choice" data-${prefix}="${i}"><span class="l">${L[i]}</span><span>${q.code?`<code>${esc(o)}</code>`:esc(o)}</span></button>`).join('')}</div>`;
+  return `<div class="row"><label class="sr" for="${prefix}-in" hidden>Antwoord</label><input id="${prefix}-in" class="inp ${q.mono?'mono':''}" autocomplete="off" spellcheck="false" placeholder="${esc(q.ph||'je antwoord')}"></div>`;
+}
+const correctOf=q=>q.kind==='mc'?q.o[q.a]:q.ans;
+function isRight(q,val){return q.kind==='mc'?val===q.a:q.acc.includes(norm(val));}
+function drawQ(){
+  const q=state.q, id=state.mod, s=st(id), r=REQ.includes(id);
+  $('#qcard').innerHTML=`<div class="qhead"><div><p class="eyebrow">${CHN[M[id].ch]}</p><h2>${M[id].t}</h2></div><div class="row">${r?`<span class="pill req">Verplicht · ${Math.min(s.g,NEED)}/${NEED}</span>`:''}<span class="pill">${s.g} juist van ${s.n}</span></div></div>
+  <div class="qbody"><div class="prompt">${q.p}</div>${answerView(q,'a')}<div id="fbx"></div>
+  <div class="row"><button type="button" class="btn" id="check">Controleer</button><button type="button" class="btn sec2" id="nextq">Nieuwe vraag</button></div></div>`;
+  const check=()=>{ if(state.done) return newQ();
+    let val; if(q.kind==='mc'){ if(state.picked==null) return fbMsg('info','Kies eerst een antwoord.'); val=state.picked; } else { val=$('#a-in').value; if(!val.trim()) return fbMsg('info','Typ eerst je antwoord.'); }
+    const ok=isRight(q,val); state.done=true; s.n++; if(ok){s.g++;state.streak++;} else state.streak=0; save(); updStats();
+    if(q.kind==='mc') $('#qcard').querySelectorAll('[data-a]').forEach((b,i)=>{b.disabled=true;if(i===q.a)b.classList.add('right');else if(i===val)b.classList.add('wrong');});
+    else $('#a-in').disabled=true;
+    fbMsg(ok?'good':'bad',(ok?'':`Het juiste antwoord: <b>${q.code?`<code>${esc(correctOf(q))}</code>`:esc(correctOf(q))}</b>. `)+q.x, ok?'Juist!':'Niet juist.');
+    $('#check').textContent='Volgende vraag'; drawMods(); drawPlan();
+  };
+  $('#qcard').querySelectorAll('[data-a]').forEach(b=>b.addEventListener('click',()=>{if(state.done)return;state.picked=+b.dataset.a;$('#qcard').querySelectorAll('[data-a]').forEach(x=>x.classList.toggle('sel',x===b));}));
+  const inp=$('#a-in'); if(inp){inp.addEventListener('keydown',e=>{if(e.key==='Enter')check();});}
+  $('#check').addEventListener('click',check);
+  $('#nextq').addEventListener('click',newQ);
+}
+function fbMsg(kind,msg,title){$('#fbx').innerHTML=`<div class="fb ${kind}">${title?`<b class="t">${title}</b>`:''}<p>${msg}</p></div>`;}
+function drawPlan(){
+  const p=progress(), done=p.filter(x=>x.g>=NEED).length;
+  $('#plan').innerHTML=`<div class="qhead"><div><p class="eyebrow">Op weg naar de eindtoets</p><h3>${isUnlocked()?'De eindtoets is open':`Nog ${p.length-done} verplichte oefeningen`}</h3></div><span class="pill">${done}/${p.length}</span></div>
+  <div class="bar" style="margin:14px 0"><i style="width:${Math.round(done/p.length*100)}%"></i></div>
+  <div class="progress">${p.map(x=>`<button type="button" class="pi ${x.g>=NEED?'ok':''}" data-mod="${x.id}" style="border:none;text-align:left"><span>${M[x.id].t}</span><b>${Math.min(x.g,NEED)}/${NEED}</b></button>`).join('')}</div>`;
+  $('#plan').querySelectorAll('[data-mod]').forEach(b=>b.addEventListener('click',()=>{state.mod=b.dataset.mod;save();newQ();drawMods();window.scrollTo({top:0,behavior:'smooth'});}));
+}
+
+// ---------- lab ----------
+const ip4=s=>/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/.test((s||'').trim())&&s.trim().split('.').every(x=>+x<=255);
+const isPriv=s=>{const p=s.split('.').map(Number);return p[0]===10||(p[0]===172&&p[1]>=16&&p[1]<=31)||(p[0]===192&&p[1]===168);};
+const macOk=s=>/^([0-9A-F]{2}[-:]){5}[0-9A-F]{2}$/i.test((s||'').trim());
+const net24=s=>s.trim().split('.').slice(0,3).join('.');
+const LABOPS=[
+ {n:1,t:'Je netwerkkaart',d:'Open de opdrachtprompt en typ <code>ipconfig /all</code>. Kies de adapter die verbonden is.',f:[['mac','Fysiek adres (MAC)','bv. 3C-52-82-1A-9F-07',1],['vendor','Fabrikant (zoek de OUI op met een MAC-lookup-website)','bv. Intel',0],['ip','IPv4-adres','bv. 192.168.1.23',1],['gw','Standaardgateway','bv. 192.168.1.1',1]],
+  chk(v){const r=[];if(v.mac)r.push(macOk(v.mac)?['ok',`MAC-adres in orde. OUI: <code>${v.mac.trim().slice(0,8).toUpperCase()}</code>.`]:['warn','Een MAC-adres heeft 6 paren hexa, gescheiden door - of :.']);
+   if(v.ip)r.push(ip4(v.ip)?(v.ip.startsWith('169.254')?['warn','169.254.x.x: je kreeg geen adres van de DHCP-server.']:['ok',`Geldig adres, ${isPriv(v.ip)?'privé':'publiek'}.`]):['warn','Een IPv4-adres bestaat uit 4 getallen van 0 tot 255.']);
+   if(v.ip&&v.gw&&ip4(v.ip)&&ip4(v.gw))r.push(net24(v.ip)===net24(v.gw)?['ok','De gateway ligt in hetzelfde netwerk (bij /24).']:['warn','De gateway ligt niet in hetzelfde /24-netwerk. Controleer je masker.']);
+   if(v.vendor)r.push(['tip','Klopt de fabrikant met het merk van je laptop of netwerkkaart?']);return r;}},
+ {n:2,t:'Wie zit er op het netwerk?',d:'Typ <code>arp -a</code> of scan het klasnetwerk met een IP-scanner (Advanced IP Scanner, Angry IP Scanner of Fing). Scan alleen met toestemming. Noteer 3 toestellen.',f:[['d1','Toestel 1: IP-adres en wat het is','bv. 192.168.1.1 · router',1],['d2','Toestel 2','bv. 192.168.1.40 · printer',1],['d3','Toestel 3','bv. 192.168.1.61 · gsm',1]],
+  chk(v,all){const r=[];const own=all[1]&&all[1].ip;['d1','d2','d3'].forEach((k,i)=>{if(!v[k])return;const ip=(v[k].match(/\d{1,3}(\.\d{1,3}){3}/)||[''])[0];
+   if(!ip4(ip))r.push(['warn',`Toestel ${i+1}: begin met een geldig IP-adres.`]);else if(own&&ip4(own)&&net24(ip)!==net24(own))r.push(['warn',`Toestel ${i+1} zit niet in hetzelfde netwerk als jouw pc.`]);else r.push(['ok',`Toestel ${i+1}: ${ip}${/\s\S/.test(v[k].replace(ip,''))?'':' (schrijf er ook bij wat het is)'}`]);});
+   if(Object.values(v).some(x=>/\.1\b/.test(x||'')))r.push(['tip','Het adres op .1 is meestal de router: daar zit ook de firewall.']);return r;}},
+ {n:3,t:'Je firewall',d:'Open Windows-beveiliging › Firewall en netwerkbeveiliging. Open daarna <code>wf.msc</code> en bekijk de inbound rules. Neem van beide een schermafdruk voor je werkblad.',f:[['prof','Actief netwerkprofiel','',1,['','Domein','Privé','Openbaar']],['on','Staat de firewall aan voor dat profiel?','',1,['','Ja','Nee']],['rule','Naam van één inbound rule','bv. Bestands- en printerdeling',0]],
+  chk(v){const r=[];if(v.prof)r.push(v.prof==='Openbaar'?['ok','Openbaar: je pc is verborgen. Goed op een vreemd netwerk.']:v.prof==='Privé'?['tip','Privé: je pc is zichtbaar. Alleen op een netwerk dat je vertrouwt.']:['ok','Domein: het netwerk wordt beheerd door de IT-dienst.']);
+   if(v.on)r.push(v.on==='Ja'?['ok','De firewall staat aan.']:['warn','Een firewall hoort aan te staan. Staat er een andere firewall (antivirus) actief?']);if(v.rule)r.push(['ok','Inbound rule genoteerd.']);return r;}},
+ {n:4,t:'De wifi van de school',d:'Typ <code>netsh wlan show interfaces</code> terwijl je met de wifi verbonden bent. Typ daarna <code>netsh wlan show networks mode=bssid</code> om de kanalen in de buurt te zien.',f:[['ssid','SSID','bv. School-WiFi',1],['radio','Radiotype','',1,['','802.11g','802.11n','802.11ac','802.11ax','802.11be']],['ch','Kanaal','bv. 44',1],['band','Band','',1,['','2,4 GHz','5 GHz','6 GHz']],['auth','Verificatie (beveiliging)','',1,['','Open','WPA2-Personal','WPA2-Enterprise','WPA3-Personal','WPA3-Enterprise']]],
+  chk(v){const r=[];const W={'802.11n':'Wi-Fi 4','802.11ac':'Wi-Fi 5','802.11ax':'Wi-Fi 6','802.11be':'Wi-Fi 7','802.11g':'geen Wi-Fi-nummer (oud)'};
+   if(v.radio)r.push(['ok',`${v.radio} = ${W[v.radio]}.`]);const c=+v.ch;
+   if(v.ch){if(!(c>=1&&c<=196))r.push(['warn','Een kanaal is een getal: 1 tot 13 (2,4 GHz) of vanaf 36 (5 GHz).']);else{const b=c<=14?'2,4 GHz':'5 GHz';
+    if(v.band&&v.band!=='6 GHz'&&v.band!==b)r.push(['warn',`Kanaal ${c} hoort bij ${b}, niet bij ${v.band}.`]);else r.push(['ok',`Kanaal ${c} = ${b}.`]);
+    if(c<=14&&![1,6,11].includes(c))r.push(['tip','In 2,4 GHz zijn 1, 6 en 11 de kanalen die elkaar niet storen.']);}}
+   if(v.auth)r.push(v.auth==='Open'?['warn','Open: geen versleuteling.']:v.auth.includes('Enterprise')?['ok','Enterprise: iedereen logt in met eigen gegevens.']:['ok',`${v.auth}: versleuteld.`]);return r;}},
+ {n:5,t:'Netwerkcommando\'s',d:'Voer de commando\'s uit en noteer wat je ziet.',f:[['ping','ping 8.8.8.8 · gemiddelde tijd','bv. 12 ms',1],['hops','tracert www.microsoft.com · aantal hops','bv. 11',1],['ubu','nslookup www.ubuntu.com · IP-adres','bv. 185.125.190.20',1],['mx','nslookup -type=mx sint-niklaas.be · mailserver','naam van de mailserver',1]],
+  chk(v){const r=[];if(v.ping)r.push(/\d/.test(v.ping)?['ok','Ping lukt: de DNS-server van Google is bereikbaar.']:['warn','Noteer een tijd in ms. Lukt ping niet? Controleer je verbinding.']);
+   if(v.hops)r.push(+v.hops>0&&+v.hops<31?['ok',`${+v.hops} hops: zoveel routers tussen jou en Microsoft.`]:['warn','Tel de genummerde regels van tracert (maximaal 30).']);
+   if(v.ubu)r.push(ip4(v.ubu)?(isPriv(v.ubu)?['warn','Dit is een privé-adres: neem het adres onder "Niet-bindend antwoord".']:['ok','Publiek IP-adres van de webserver van Ubuntu.']):['warn','Noteer een IPv4-adres (4 getallen).']);
+   if(v.mx)r.push(/\.[a-z]{2,}/i.test(v.mx)?['ok','Mailservernaam genoteerd.']:['warn','Een mailserver heeft een naam met punten, zoals mail.voorbeeld.be.']);return r;}},
+ {n:6,t:'Extern IP-adres en whois',d:'Zoek in je browser <b>wat is mijn IP</b>. Zoek daarna met een whois-opzoeking (bv. ipinfo.io) wie eigenaar is van 34.110.155.89 en 54.74.73.31.',f:[['ext','Extern IP-adres van de school','',1],['w1','Eigenaar 34.110.155.89','',0],['w2','Eigenaar 54.74.73.31','',0]],
+  chk(v,all){const r=[];if(v.ext){if(!ip4(v.ext))r.push(['warn','Noteer een IPv4-adres.']);else if(isPriv(v.ext))r.push(['warn','Dit is een privé-adres. Het externe adres is publiek: zoek "wat is mijn IP".']);else r.push(['ok','Publiek adres: iedereen in de klas krijgt hetzelfde, door NAT.']);}
+   if(v.w1)r.push(/google/i.test(v.w1)?['ok','34.110.x.x hoort bij Google (Google Cloud).']:['tip','Controleer: 34.110.x.x hoort bij een grote cloudprovider.']);
+   if(v.w2)r.push(/amazon|aws/i.test(v.w2)?['ok','54.74.x.x hoort bij Amazon (AWS).']:['tip','Controleer: 54.74.x.x hoort bij een grote cloudprovider.']);return r;}}
+];
+function labVals(n){return state.lab[n]||(state.lab[n]={});}
+function drawLab(){
+  const all={};LABOPS.forEach(o=>all[o.n]=labVals(o.n));
+  $('#lab').innerHTML=`<p class="eyebrow">Praktijk op je eigen pc</p><h2>Onderzoek je netwerk</h2><p class="lead">Werk de 6 opdrachten af op een Windows-pc. De app controleert je antwoorden meteen. Scan alleen het klasnetwerk of je eigen netwerk, met toestemming. Onderaan staat je verslag om te kopiëren.</p>
+  <div class="field" style="margin-top:14px;max-width:340px"><label for="lab-name">Je naam</label><input class="inp" id="lab-name" value="${esc(state.lab.name||'')}" autocomplete="name"></div>
+  ${LABOPS.map(o=>`<section class="op" aria-labelledby="op-${o.n}"><div class="op-head"><span class="op-n">${o.n}</span><h3 id="op-${o.n}">${o.t}</h3></div><p style="margin:0;max-width:72ch">${o.d}</p>
+   <div class="form">${o.f.map(f=>`<div class="field"><label for="f-${o.n}-${f[0]}">${f[1]}</label>${f[4]?`<select class="inp" id="f-${o.n}-${f[0]}" data-op="${o.n}" data-k="${f[0]}">${f[4].map(x=>`<option ${all[o.n][f[0]]===x?'selected':''} value="${x}">${x||'kies…'}</option>`).join('')}</select>`:`<input class="inp ${/mac|ip|gw|ch|ext|ubu|hops/.test(f[0])?'mono':''}" id="f-${o.n}-${f[0]}" data-op="${o.n}" data-k="${f[0]}" placeholder="${esc(f[2])}" value="${esc(all[o.n][f[0]]||'')}" autocomplete="off" spellcheck="false">`}</div>`).join('')}</div>
+   <div class="rev" id="chk-${o.n}"></div></section>`).join('')}
+  <section class="op"><div class="op-head"><span class="op-n">✓</span><h3>Je verslag</h3></div><p class="small" style="margin:0">Kopieer dit en plak het in je werkblad of stuur het naar je leerkracht.</p><textarea class="copybox" id="labrep" readonly></textarea><div class="row"><button type="button" class="btn" id="labcopy">Kopieer verslag</button><span class="small" id="labcopied" aria-live="polite"></span></div></section>`;
+  const upd=n=>{const o=LABOPS.find(x=>x.n===n);const v=labVals(n);const r=Object.values(v).some(x=>x)?o.chk(v,all):[];$('#chk-'+n).innerHTML=r.map(([k,t])=>`<p class="chk ${k}">${t}</p>`).join('');};
+  const rep=()=>{const lines=[`Netwerkapparatuur en media · Praktijk · ${state.lab.name||'(naam)'}`];LABOPS.forEach(o=>{lines.push('',`${o.n}. ${o.t}`);o.f.forEach(f=>lines.push(`   ${f[1].split(' (')[0]}: ${labVals(o.n)[f[0]]||'—'}`));});$('#labrep').value=lines.join('\n');};
+  $('#lab').querySelectorAll('[data-op]').forEach(el=>el.addEventListener('input',()=>{labVals(+el.dataset.op)[el.dataset.k]=el.value;save();upd(+el.dataset.op);if(+el.dataset.op===1)upd(2);rep();}));
+  $('#lab-name').addEventListener('input',e=>{state.lab.name=e.target.value;save();rep();});
+  $('#labcopy').addEventListener('click',()=>{const t=$('#labrep');navigator.clipboard.writeText(t.value).then(()=>$('#labcopied').textContent='Gekopieerd.').catch(()=>{t.focus();t.select();$('#labcopied').textContent='Selecteer en kopieer met Ctrl+C.';});});
+  LABOPS.forEach(o=>upd(o.n)); rep();
+}
+
+// ---------- test ----------
+const test={phase:'intro',qs:[],i:0,name:'',klas:'',start:0,leaves:0,picked:null,warned:false};
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&test.phase==='run')test.leaves++;});
+function buildTest(){const qs=[],seen=new Set();TEST_PLAN.forEach(([id,n])=>{for(let k=0;k<n;k++){let q,t=0;do{q=M[id].gen();t++;}while(seen.has(q.p)&&t<20);seen.add(q.p);qs.push({id,q,ans:null,ok:false});}});return qs;}
+function codeOf(name,klas,score,date){let h=2166136261;for(const c of `${norm(name)}|${norm(klas)}|${score}|${date}|NL2`){h^=c.charCodeAt(0);h=Math.imul(h,16777619)>>>0;}return h.toString(36).toUpperCase().padStart(7,'0').slice(-7);}
+const pad=n=>String(n).padStart(2,'0');
+const fmtDate=d=>`${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+function drawTest(msg){
+  const el=$('#test');
+  if(test.phase==='run') return drawTestQ(msg);
+  if(test.phase==='done') return drawResult();
+  if(!isUnlocked()){
+    const p=progress();
+    el.innerHTML=`<p class="eyebrow">Eindtoets · gesloten</p><h2>Eerst oefenen</h2><p class="lead">De eindtoets gaat open als je elke verplichte oefening minstens ${NEED} keer juist hebt.</p>
+     <div class="progress" style="margin-top:16px">${p.map(x=>`<div class="pi ${x.g>=NEED?'ok':''}"><span>${M[x.id].t}</span><b>${Math.min(x.g,NEED)}/${NEED}</b></div>`).join('')}</div>
+     <div class="sec"><div class="row"><button type="button" class="btn" id="goprac">Naar de oefeningen</button></div>
+     <div class="row"><div class="field"><label for="pin">Leerkrachtcode</label><input class="inp mono" id="pin" inputmode="numeric" autocomplete="off" style="max-width:160px"></div><button type="button" class="btn sec2" id="pinok" style="align-self:flex-end">Open de toets</button></div><p class="small" id="pinmsg" aria-live="polite"></p></div>`;
+    $('#goprac').addEventListener('click',()=>{const f=progress().find(x=>x.g<NEED);if(f)state.mod=f.id;state.q=null;setMode('practice');});
+    $('#pinok').addEventListener('click',()=>{if($('#pin').value.trim()===TEACHER_PIN){state.unlocked=true;save();updStats();drawTest();}else $('#pinmsg').textContent='Die code klopt niet.';});
+    return;
+  }
+  el.innerHTML=`<p class="eyebrow">Eindtoets</p><h2>30 vragen over netwerkapparatuur en media</h2><p class="lead">Je krijgt één vraag per keer. Je ziet pas op het einde wat juist was. Blijf in dit tabblad: de app telt hoe vaak je het verlaat. Op het einde krijg je een rapport met een controlecode. Neem er een schermafdruk van.</p>
+   <div class="form" style="margin-top:16px;max-width:560px"><div class="field"><label for="t-name">Voornaam en naam</label><input class="inp" id="t-name" autocomplete="name" value="${esc(test.name)}"></div><div class="field"><label for="t-klas">Klas</label><input class="inp" id="t-klas" value="${esc(test.klas)}"></div></div>
+   <div class="row" style="margin-top:16px"><button type="button" class="btn lamp" id="t-start">Start de eindtoets</button><span class="small" id="t-msg" aria-live="polite"></span></div>`;
+  $('#t-start').addEventListener('click',()=>{const n=$('#t-name').value.trim(),k=$('#t-klas').value.trim();if(!n||!k){$('#t-msg').textContent='Vul je naam en klas in.';return;}
+    Object.assign(test,{phase:'run',qs:buildTest(),i:0,name:n,klas:k,start:Date.now(),leaves:0,picked:null,warned:false});drawTest();});
+}
+function drawTestQ(msg){
+  const t=test, it=t.qs[t.i], q=it.q;
+  $('#test').innerHTML=`<div class="testbar"><p class="eyebrow">Eindtoets · vraag ${t.i+1} van ${t.qs.length}</p><span class="pill">${esc(t.name)} · ${esc(t.klas)}</span></div>
+   <div class="bar" style="margin:12px 0 4px"><i style="width:${Math.round(t.i/t.qs.length*100)}%"></i></div>
+   ${msg?`<div class="fb info"><p>${msg}</p></div>`:''}
+   <div class="qbody"><p class="small" style="margin:0">${M[it.id].t}</p><div class="prompt">${q.p}</div>${answerView(q,'t')}
+   <div class="row"><button type="button" class="btn" id="t-next">${t.i<t.qs.length-1?'Bevestig en ga verder':'Bevestig en bekijk je resultaat'}</button><span class="small" id="t-msg" aria-live="polite"></span></div></div>`;
+  t.picked=null;
+  $('#test').querySelectorAll('[data-t]').forEach(b=>b.addEventListener('click',()=>{t.picked=+b.dataset.t;$('#test').querySelectorAll('[data-t]').forEach(x=>x.classList.toggle('sel',x===b));}));
+  const go=()=>{let val;if(q.kind==='mc'){if(t.picked==null){$('#t-msg').textContent='Kies een antwoord.';return;}val=t.picked;}else{val=$('#t-in').value;if(!val.trim()){$('#t-msg').textContent='Typ een antwoord.';return;}}
+    it.ans=val;it.ok=isRight(q,val);t.warned=false;if(t.i<t.qs.length-1){t.i++;drawTestQ();window.scrollTo({top:0});}else finishTest();};
+  $('#t-next').addEventListener('click',go);
+  const inp=$('#t-in'); if(inp){inp.focus();inp.addEventListener('keydown',e=>{if(e.key==='Enter')go();});}
+}
+function finishTest(){const d=new Date(),score=test.qs.filter(x=>x.ok).length;test.phase='done';test.result={score,date:fmtDate(d),mins:Math.max(1,Math.round((Date.now()-test.start)/60000))};test.result.code=codeOf(test.name,test.klas,score,test.result.date);drawResult();window.scrollTo({top:0});}
+function drawResult(){
+  const r=test.result, n=test.qs.length, pct=Math.round(r.score/n*100);
+  const by={};test.qs.forEach(x=>{const k=M[x.id].ch;(by[k]=by[k]||[0,0]);by[k][1]++;if(x.ok)by[k][0]++;});
+  $('#test').innerHTML=`<p class="eyebrow">Eindtoets · rapport</p><h2>${esc(test.name)} · ${esc(test.klas)}</h2>
+   <div class="result" style="margin-top:12px"><div><span class="big">${r.score}/${n}</span><p class="small" style="margin:4px 0 0">${pct}% · ${r.date} · ${r.mins} min</p></div>
+   <div class="fb ${pct>=50?'good':'bad'}"><b class="t">${pct>=80?'Heel goed.':pct>=50?'Geslaagd.':'Nog niet geslaagd.'}</b><p>Controlecode <code>${r.code}</code> · tabblad verlaten: <b>${test.leaves}</b> keer</p></div></div>
+   <p class="small">Neem een schermafdruk van dit rapport en bezorg die aan je leerkracht.</p>
+   <div class="sec"><h3>Per hoofdstuk</h3><div class="chips">${Object.keys(by).sort((a,b)=>(a==0?99:a)-(b==0?99:b)).map(k=>`<span class="chip ${by[k][0]===by[k][1]?'ok':''}">${CHN[k]}: <b>${by[k][0]}/${by[k][1]}</b></span>`).join('')}</div></div>
+   <div class="sec"><h3>Je antwoorden</h3><div class="rev">${test.qs.map((x,i)=>{const q=x.q;const yours=q.kind==='mc'?q.o[x.ans]:x.ans;return `<div class="rv ${x.ok?'ok':'no'}"><p class="small">${i+1}. ${M[x.id].t} · ${x.ok?'juist':'fout'}</p><div>${q.p}</div><p>Jouw antwoord: <b>${esc(yours??'—')}</b>${x.ok?'':` · juist: <b>${esc(correctOf(q))}</b>`}</p>${x.ok?'':`<p class="small">${q.x}</p>`}</div>`;}).join('')}</div></div>
+   <div class="sec row"><button type="button" class="btn sec2" id="t-again">Nieuwe toets</button></div>`;
+  $('#t-again').addEventListener('click',()=>{test.phase='intro';drawTest();});
+}
+
+// ---------- reset ----------
+let armed=null;
+$('#reset').addEventListener('click',()=>{const c=$('#reset-confirm');
+  if(armed){clearTimeout(armed);armed=null;state.stats={};state.streak=0;state.unlocked=false;state.lab={};save();updStats();c.innerHTML='<b>Je voortgang is gewist.</b>';setTimeout(()=>c.hidden=true,2500);setMode(state.mode);return;}
+  c.hidden=false;c.innerHTML='Klik nog eens op <b>Wis mijn voortgang</b> om al je oefeningen en praktijk te wissen.';armed=setTimeout(()=>{armed=null;c.hidden=true;},5000);});
+
+load(); updStats(); setMode(state.mode);
+</script>
+
+</body></html>
